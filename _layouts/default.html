@@ -1,29 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>{{ page.title }}</title>
-    <!-- link to main stylesheet -->
-    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>{{  page.title }}</title>
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/narrow-jumbotron.css" rel="stylesheet">
   </head>
+
   <body>
-    <nav>
-      <ul>
-	<li><a href="/">Home</a></li>
-	<li><a href="/about">About</a></li>
-	<li><a href="/cv">CV</a></li>
-	<li><a href="/blog">Blog</a></li>
-      </ul>
-    </nav>
+    {% include navbar.html %}
+
     <div class="container">
-      
       {{ content }}
       
-    </div><!-- /.container -->
-    <footer>
-      <ul>
-	<li><a href="mailto:hankquinlanhub@gmail.com">email</a></li>
-	<li><a href="https://github.com/hankquinlan">github.com/hankquinlan</a></li>
-      </ul>
-    </footer>
-  </body>
+      <footer class="footer">
+        <p>&copy; Dominik Vasko 2019</p>
+      </footer>
+    </div>
+</body>
 </html>
