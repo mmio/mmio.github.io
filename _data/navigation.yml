@@ -3,8 +3,8 @@
 - name: Blog
   link: /blog/
 - name: Projects
-  link: #
-- name: Research
-  link: #
+  link: /projects/
 - name: About
   link: /about
+- name: Doc
+  link: /documentation

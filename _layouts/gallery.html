@@ -1,0 +1,46 @@
+---
+layout: default
+---
+
+<!-- Navigation for different tags -->
+<ul class="nav nav-pills">
+  <li class="nav-item">
+    <a class="nav-link {% if page.url == '/projects/' %} active {% endif %}" href="/projects/index.html">All</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if page.url == '/projects/html_projects' %} active {% endif %}" href="/projects/html_projects.html">HTML & CSS</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if page.url == '/projects/ai_projects' %} active {% endif %}" href="/projects/ai_projects.html">AI</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if page.url == '/projects/hobby_projects' %} active {% endif %}" href="/projects/hobby_projects.html">Hobby</a>
+  </li>
+</ul>
+
+<hr />
+
+{{content}}
+
+<div class="card-columns">
+  {% for item in site.data.gallery %}
+  {% if item.tag == page.tagname or page.tagname == nil %}
+  <div class="card">
+    <img class="card-img-top img-thumbnail" src="{{ item.img }}" alt="Card image cap">
+    <div class="card-body">
+      <h5 class="card-title">{{ item.name }}</h5>
+      <p class="card-text">
+	{{ item.desc }}
+      </p>
+
+    </div>
+    <ul class="list-group list-group-flush">
+      <!-- <li class="list-group-item"> -->
+      <!-- 	<span class="badge badge-secondary">{{item.tag}}</span> -->
+      <!-- </li> -->
+      <a href="{{ item.link }}" class="btn btn-primary">Go somewhere</a>
+    </ul>
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>

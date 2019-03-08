@@ -1,9 +1,38 @@
 ---
 layout: default
 ---
-<h1>{{ page.title }}</h1>
-<p class="meta">{{ page.date | date_to_string }}</p>
+<!-- Individual post -->
+
+<nav>
+  <ul class="pagination d-flex justify-content-between">
+    <li class="{% if page.previous.url == nil %} disabled {% endif %}">
+      <a class="page-link" href="{{ page.previous.url }}">Previous</a>
+    </li>
+    <li> <h3 class="d-flex justify-content-center">{{ page.title }}</h3> </li>
+    <li class="{% if page.next.url == nil %} disabled {% endif %}">
+      <a class="page-link" href="{{ page.next.url }}">Next</a>
+    </li>
+  </ul>
+</nav>
+
+<hr />
+
+<p class="meta"> Written: {{ page.date | date_to_string }}, {{ page.date | timeago }} </p>
+<p> Autor: {{ page.author }} </p>
 
 <div class="post">
   {{ content }}
 </div>
+
+<hr \>
+
+<nav>
+  <ul class="pagination d-flex justify-content-between">
+    <li>
+      <a class="page-link" href="{{ page.previous.url }}">Previous</a>
+    </li>
+    <li>
+      <a class="page-link" href="{{ page.next.url }}">Next</a>
+    </li>
+  </ul>
+</nav>
