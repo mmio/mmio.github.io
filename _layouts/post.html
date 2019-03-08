@@ -6,19 +6,30 @@ layout: default
 <nav>
   <ul class="pagination d-flex justify-content-between">
     <li class="{% if page.previous.url == nil %} disabled {% endif %}">
-      <a class="page-link" href="{{ page.previous.url }}">Previous</a>
+      <a class="page-link" href="{{ page.previous.url }}">
+	<i class="fas fa-chevron-left"></i>
+      </a>
     </li>
-    <li> <h3 class="d-flex justify-content-center">{{ page.title }}</h3> </li>
+    <li> <h3 class="d-flex justify-content-center">{{ page.title | capitalize }}</h3> </li>
     <li class="{% if page.next.url == nil %} disabled {% endif %}">
-      <a class="page-link" href="{{ page.next.url }}">Next</a>
+      <a class="page-link" href="{{ page.next.url }}">
+	<i class="fas fa-chevron-right"></i>
+      </a>
     </li>
   </ul>
 </nav>
 
 <hr />
 
+{% assign nowords = page.content | number_of_words %}
+{% assign result =  nowords | divided_by: 200 %}
+{% assign result_dec = page.content | number_of_words | divided_by: 200.0 %}
+
 <p class="meta"> Written: {{ page.date | date_to_string }}, {{ page.date | timeago }} </p>
 <p> Autor: {{ page.author }} </p>
+<p> Length: {{ result }} minutes and {{ result_dec | minus: result | times: 60 | ceil }} seconds ({{ nowords }} words) </p>
+
+<hr />
 
 <div class="post">
   {{ content }}
@@ -29,10 +40,14 @@ layout: default
 <nav>
   <ul class="pagination d-flex justify-content-between">
     <li>
-      <a class="page-link" href="{{ page.previous.url }}">Previous</a>
+      <a class="page-link" href="{{ page.previous.url }}">
+	<i class="fas fa-chevron-left"></i>
+      </a>
     </li>
     <li>
-      <a class="page-link" href="{{ page.next.url }}">Next</a>
+      <a class="page-link" href="{{ page.next.url }}">
+	<i class="fas fa-chevron-right"></i>
+      </a>
     </li>
   </ul>
 </nav>

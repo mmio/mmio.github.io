@@ -2,6 +2,7 @@
 layout: post
 title: Downloading tweets from twitter
 author: Dominik Vasko
+desc: A tutorial on how to download tweets by their IDs
 ---
 ## Intro
 
