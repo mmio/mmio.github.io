@@ -85,5 +85,5 @@
 - name: Ubuntu autoinstall scripts
   desc: This script automaticly installs my rice of Ubuntu(contains dot files)
   img: https://via.placeholder.com/1500
-  link: https://codepen.io/dominikv96/pen/OMaMOv
+  link: https://github.com/mmio/my-ubuntu-autoinstall-scripts.git
   tag: hobby
