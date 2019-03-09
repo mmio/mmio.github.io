@@ -19,6 +19,8 @@ Second after installation you will have 2 options(or 3), how to run
 Emacs. GUI, CLI, (background deamon). Use your application launcher or
 type emacs(emacs -nw for CLI) in your terminal.
 
+Before you start the characters `C` and `M` are modifiers. `C` stands for Ctrl and `M` for Alt. If another character is appended with a dash you have to press it while holding the modifier e.g `C-x C-c` means hold Ctrl and pres x then hold Ctrl and pres c(this one exits emacs).
+
 ## Movement
 Emacs is quiet robust so don't expect to learn the ins and outs in a
 few minutes. You can learn basic movement though. Most modern editor
@@ -38,7 +40,7 @@ and `M-v`(pageup).
 ## Deleting stuff
 Besides moving you can also delete with backspace or Del. If you want
 to delete everything to the right of your cursor(kill the line) press
-`C-k`.
+`C-k`. To delete individual character use `C-d`.
 
 ## The end
 For now this should be enoght try those key combinations of different
@@ -47,16 +49,3 @@ and you can edit text much efficiently without the need for a mouse.
 
 P.S
 To save a file just type `C-x C-s`
-
-```python
-class Person:
-	def __init__(self):
-		self.msg = 'hello'
-		
-	def greet(self):
-		print(self.msg)
-
-def hello():
-	x = ('a', 1, False)
-	return x
-```

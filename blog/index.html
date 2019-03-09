@@ -3,9 +3,7 @@ layout: default
 title: Dominik Vasko's Blog
 ---
 <h1>{{ page.title }}</h1>
-<!-- <ul class="posts"> -->
 {% for post in site.posts %}
-<!-- <li> -->
 <div class="card mb-2">
   <div class="card-header font-weight-bold">
     {{ post.title }}
@@ -17,10 +15,5 @@ title: Dominik Vasko's Blog
     <a href="{{ post.url }}" title="{{ post.title }}" class="btn btn-primary float-right">Read more</a>
   </div>
 </div>
-<!-- <span>{{ post.date | date_to_string }}</span> -->
-<!-- <a href="{{ post.url }}" title="{{ post.title }}"> -->
-<!--   {{ post.title }} -->
-<!-- </a> -->
-<!-- </li> -->
 {% endfor %}
-<!-- </ul> -->
+

@@ -4,8 +4,6 @@ title: Downloading tweets from twitter
 author: Dominik Vasko
 desc: A tutorial on how to download tweets by their IDs
 ---
-## Intro
-
 ## Requirements
 You will need Python, and the library tweepy also you can basicly use
 any ID, I personally recomment to get a list of them from "here" for
