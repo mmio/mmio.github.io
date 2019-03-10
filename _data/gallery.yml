@@ -46,44 +46,38 @@
   link: https://codepen.io/dominikv96/pen/JKqRAW
   tag: html
 
-- name: Bomberman Game
-  desc: Work in progress...
-  img: https://via.placeholder.com/1500
-  link: #
-  tag: html
-
 - name: Finding the path
   desc: Finding the path in a map with an evolutionary algorithm
-  img: https://via.placeholder.com/1500
+  img: /assets/images/place.png
   link: /assets/Evol.zip
   tag: ai
 
 - name: Rush hour solver
   desc: Using Depth first search in Python
-  img: https://via.placeholder.com/1500
+  img: /assets/images/place.png
   link: /assets/rush.zip
   tag: ai
 
 - name: Basic production system
   desc: A production system which creates new implications
-  img: https://via.placeholder.com/1500
+  img: /assets/images/place.png
   link: /assets/Prod.zip
   tag: ai
 
 - name: Getting tweets from Twitter with Python and tweepy
   desc: Download all the tweets you need
-  img: https://via.placeholder.com/1500
-  link: /blog/2019/03/04/Downloading-tweets-from-twitter
+  img: /assets/images/place.png
+  link: blog/2019/03/04/Downloading-tweets-from-twitter
   tag: ai
 
 - name: Best quality Youtube Downloader
   desc: Download best quality sound and video from YT
-  img: https://via.placeholder.com/1500
+  img: /assets/images/place.png
   link: https://github.com/mmio/YT_DW
   tag: hobby
 
 - name: Ubuntu autoinstall scripts
   desc: This script automaticly installs my rice of Ubuntu(contains dot files)
-  img: https://via.placeholder.com/1500
+  img: /assets/images/place.png
   link: https://github.com/mmio/my-ubuntu-autoinstall-scripts.git
   tag: hobby
