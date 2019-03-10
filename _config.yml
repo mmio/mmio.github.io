@@ -30,6 +30,7 @@ theme: minima
 plugins:
   - jekyll-feed
   - jekyll-timeago
+  - jekyll_quick_man
 highlighter: rouge
 
 # Exclude from processing.

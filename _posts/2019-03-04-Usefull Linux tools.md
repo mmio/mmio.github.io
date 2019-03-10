@@ -12,7 +12,8 @@ This a small program that can be really useful. Its purpose is to let you run pr
 ```bash
 nohup <command to run> &
 ```
-nohup should be installed on your distro by default.
+
+nohup should be installed on your distro by default. You can also check out the full manual {% man 1 nohup ubuntu%}.
 
 ## fzf
 Or fuzzy finder, this little utility can search you whole drive for a file or directory, it has support for regexps and works really fast. To install it just type:
@@ -21,7 +22,7 @@ Or fuzzy finder, this little utility can search you whole drive for a file or di
 sudo apt install fzf
 ```
 
-After instalation you can type `fzf` in the terminal which opens search window. You can type the name of the file you are looking for and fzf will try to find it. You can also type only parts of the filename, that is where the fzf shines.
+After instalation you can type `fzf` in the terminal which opens search window. You can type the name of the file you are looking for and fzf will try to find it. You can also type only parts of the filename, that is where the fzf shines. To find out more check the manual {% man 1 fzf %}.
 
 ![FZF](/assets/images/fzf.png){:class="img-thumbnail"}
 
@@ -35,10 +36,10 @@ The syntax for this one is a little bit different than orginary linux programs. 
 ```bash
 echo random.c | entr -s 'gcc random.c -Wall -Werror -pedantic -ansi; ./a.out'
 ```
-The command above will execute `gcc` everytime random.c is changed(saved). This is useful when you don't want to manually type the whole thing.
+The command above will execute `gcc` everytime random.c is changed(saved). This is useful when you don't want to manually type the whole thing. Futher examples can be found in the manual {% man 1 entr ubuntu %}
 
 ## redshift
-If you want to make your computer screen easier on you eyes you can use Redshift to make all the colors warmer. Elegedly it also helps with sleeping. Just install it and enjoy.
+If you want to make your computer screen easier on you eyes you can use Redshift to make all the colors warmer. Elegedly it also helps with sleeping. Just install it and enjoy. {% man 1 redshift ubuntu %}
 ```bash
 sudo apt install redshift
 ```

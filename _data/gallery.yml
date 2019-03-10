@@ -73,13 +73,13 @@
 - name: Getting tweets from Twitter with Python and tweepy
   desc: Download all the tweets you need
   img: https://via.placeholder.com/1500
-  link: https://codepen.io/dominikv96/pen/OMaMOv
+  link: /blog/2019/03/04/Downloading-tweets-from-twitter
   tag: ai
 
 - name: Best quality Youtube Downloader
   desc: Download best quality sound and video from YT
   img: https://via.placeholder.com/1500
-  link: https://codepen.io/dominikv96/pen/OMaMOv
+  link: https://github.com/mmio/YT_DW
   tag: hobby
 
 - name: Ubuntu autoinstall scripts

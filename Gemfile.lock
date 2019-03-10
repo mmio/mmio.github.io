@@ -37,6 +37,7 @@ GEM
       mini_i18n (>= 0.8.0)
     jekyll-watch (2.1.2)
       listen (~> 3.0)
+    jekyll_quick_man (0.0.3)
     kramdown (1.17.0)
     liquid (4.0.1)
     listen (3.1.5)
@@ -71,6 +72,7 @@ DEPENDENCIES
   jekyll (~> 3.8.5)
   jekyll-feed (~> 0.6)
   jekyll-timeago
+  jekyll_quick_man
   minima (~> 2.0)
   tzinfo-data
 
