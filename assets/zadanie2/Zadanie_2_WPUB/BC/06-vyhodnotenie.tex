@@ -1,0 +1,42 @@
+\section{Vyhodnotenie}
+Výsledky experimentu budú vyhodnotené manuálne. Na vyhodnotenie sme každému testerovi dali 6 vygenerovaných textov, pričom sa vyhodnocovali tieto 4 kvalitatívne parameter textu:
+
+\begin{itemize}
+    \item Správnosť jednotlivých slov
+    \item Morfologický tvar slov
+    \item Slovosled
+    \item Zmysluplnosť celého textu
+\end{itemize}
+
+Tieto metriky sú v poradí od najkratšej závislosti písmen až po najdlhšie. Spôsob vyhodnotenia bude nasledovný, zoberieme všetky odpovede zvlášť pre slovenský a anglický text a vytvoríme z nich priemer.
+
+\subsection{Anglický text}
+Výsledky hodnotenie anglických textov sú nasledovné:
+Zhruba 79\% vygenerovaných slov dávalo zmysel
+Slovosled bol správny v 40\% textov
+Morfológia v prípade 66\%
+A zmysel dávalo len 23\% z celkových textov
+
+V prípade angličtiny mala naša sieť problém hlavne zachovať nejakú zmysluplnú myšlienku, kým slová a ich tvary boli pomerne dobré, sieť nedokázala zachovať dostatočný súvis pre vety a celkové články.
+
+\subsection{Slovenský text}
+Výsledky hodnotenie slovenských textov sú nasledovné:
+Zhruba 69\% vygenerovaných slov dávalo zmysel
+Slovosled bol správny v 58\% textov
+Morfológia v prípade 54\%
+A zmysel dávalo len 17\% z celkových textov
+
+Skoro v každej metrike bola slovenčina horšia, pravdepodobne kvôli rozdielu medzi komplexnosťami jazykov. Slovenčina má pestrejšiu morfológiu a slová sa dajú ohýbať do viacerých tvarov.
+
+Z výsledkov hodnotenia vyplýva, že aj napriek jednoduchosti nášho modelu bol schopný sa naučiž krátkodobé závisloti ktoré nám dávali zmysluplné slová, čo sa týka komplikovanejších vecí ako súvis a závislosť jednotlivých častí textov, na ktoré sa siet potrebuje naučiť dlhšie závisloti, sieť nebola schopná zapamätať si vzťahy, pomohla by asi pozornosť.
+
+
+\begin{table}[]
+\begin{tabular}{|l|}
+\hline
+\begin{tabular}[c]{p{\linewidth}}John Cheerny\\John Leyn Show (August 24, 1940 0 February 23, 1987) was an American singer-songwriter and worldwide. He acted in the band for songs for the 1990s to the "Michael Albert Andrew \& Ort". He was set during the mid-1990s. He won a former club which became a character for the business Adele Shelley dollar women's song book "Raw" as NXT War Railway from the 2001 census.
+\end{tabular} \\ \hline
+\begin{tabular}[c]{p{\linewidth}}Saint-Martin\\ Saint-Maritre je francúzska obec, ktorá sa nachádza v departemente Orne, v regióne Dolná Normandia.\\ Obec má rozlohu . Najvyšší bod je položený a najnižší bod\\ Počet obyvateľov obce je ().\\ Nasledujúci graf zobrazuje vývoj počtu obyvateľov v obci.\end{tabular}                                                                                                                        \\ \hline
+\end{tabular}
+\caption{\label{tab:gen-text}Ukážka vygenerovaného slovenského a anglického textu.}
+\end{table}

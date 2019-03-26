@@ -1,0 +1,1428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: sablona-bp.xml,v 1.3 2006/04/22 09:47:36 jkj Exp $ -->
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
+
+<book lang="sk">
+  <bookinfo>
+    <title>Neurálne Modely na Generovanie Textu v Slovenskom Jazyku</title>
+
+    <subtitle>Bakalárska práca</subtitle>
+
+    <author>
+      <firstname>Dominik</firstname>
+
+      <surname>Vasko</surname>
+
+      <affiliation>
+        <orgname>Slovenská technická univerzita v Bratislave</orgname>
+
+        <orgdiv role="fakulta">Fakulta informatiky a informačných technológii</orgdiv>
+
+        <orgdiv role="katedra">Katedra informačního a znalostního
+        inženýrství</orgdiv>
+      </affiliation>
+    </author>
+
+    <othername role="vedouci">Ing. Samuel Pecár</othername>
+
+    <pubdate>máj 2019</pubdate>
+
+    <abstract>
+		<title>Anotácia</title>
+
+		<para>
+			V tejto práci sa budeme zaoberať generovaním textov pre ľudí, ktoré sú určený na čítanie a majú podobu prirodzeného jazyka. Práca obsahuje analýzu oblasti generovania textov prirodzeného jazyka a jednotlivých využití generovaných textov ako sumarizácia, simplifikácia, parafrázovanie a generovanie dialógov, ich vývoj a súčasný stav pre tieto úlohy.
+			Súčasťou práce je aj návrh a implementácia modelu na generovanie textu na ktoré budú použité hlboké rekurentné neurónové siete, ktoré dosahujú v poslednej dobe úspech v tejto oblasti a zďaleka najlepšie výsledky. Samotné generovanie textu bude robené v jazyku slovenskom a anglickom, účelom implementácie modelu v dvoch jazykoch je hlavne porovnanie rôznych prístupov pre rôzne jazyky.
+			Všetky experimenty budú robené na paralelných korpusoch podobnej veľkosti a z podobných voľne prístupných zdrojov ako napr. Wikipédia. Evaluácia výsledkov experimentov bude robená manuálne ľudskou silou metódou hodnotenia metrík generovaného text. Dôvodom pre manuálne hodnotenie je, že ľuďmi čitateľný text je komplexný a automatizované hodnotenie nie je vždy vhodné.
+		</para>
+    </abstract>
+
+    <abstract lang="en">
+		<title>Annotation</title>
+
+		<para>
+			The goal of this works is to generate text in a natural language which is readable to humans, it contains an analysis of the natural language generation field and its uses like text summarization, simplification, paraphrasing and dialog generation and their evolution.
+			Part of this work is a design and implementation of a model for text generation. Deep recurent neural networks will be used for that task, the reason for that is their efficiency and the fact the most state-of-the art models use them. Texts will be generated in Slovak and English languages to demostrate differences between those languages from the context of NLG.
+			All models used will be trained on a paralel corpuses of similar size for example from Wikipedia. The evaulation of the results will be done manualy with human power by evaluating metrics. The reason for that is mainly the complexity of natural languags where automated evaluation is not suficient.
+		</para>
+    </abstract>
+
+    <abstract>
+		<title>Poďakovanie</title>
+
+		<para>
+			Ďakujem Ing. Samuelovi Pecárovi za odborné rady a usmernenie pri vypracovávaní mojej bakalárskej práce.
+		</para>
+    </abstract>
+
+    <abstract>
+		<title>Prehlásenie</title>
+
+		<para>
+			Čestne prehlasujem, že záverečnú prácu som vypracoval samostatne s použitím uvedenej literatúry a na základe svojich vedomostí a znalostí.
+		</para>
+
+		<?vskip 70pt?>
+
+		<para>V Bratislave dňa 27. marca 2019</para>
+
+		<?vskip 30pt?>
+
+		<para><?hskip 300pt?>Dominik Vasko</para>
+    </abstract>
+  </bookinfo>
+
+  <chapter>
+    <title>Úvod</title>
+  <para>
+    Zrak, hmat a sluch sú tromi našimi najdôležitejšími vnemami, pomocou
+    ktorých prijímame veľké množstvo informácií a bez ktorých by sme sa
+    ťažko v živote zaobišli. Práve preto text, či už vo viditeľnej,
+    hmatateľnej alebo zvukovej podobe predstavuje dôležité médium na
+    prenášanie, komunikáciu a organizovanie dát a informácií, ktoré má
+    hlavne v dnešnej dobe internetu a sociálnych sietí veľmi dôležitú
+    rolu <citation>WMK18</citation> .
+  </para>
+  <para>
+    Čím viac sa spoločnosť blíži k viac digitálnej kde informácií je
+    veľmi veľa bude treba tvoriť ale aj vstrebávať a organizovať viac a
+    viac textov. Google, Wikipédia, protokoly ako html ktoré nám
+    umožňujú prispievať obsah na internet, blogy, magazíny, knihy,
+    noviny, väčšina obsahu na sociálnych sietiach a na internete atď. sú
+    tvorené veľkým množstvom textov.<citation>Luh58</citation>
+  </para>
+  <para>
+    Nie len digitálne ale aj mnoho klasických ľudských aktivít v sebe
+    zahŕňa tvorbu alebo vstrebávanie nejakých druhov textov či je to
+    obyčajná medziľudská komunikácia alebo písanie na papier.
+	<citation>LV16</citation>
+  </para>
+  <para>
+    Práca s textom sa týka mnohých oborov od študentov, sekretárok až po
+    softvérových architektov a manažérov. Aby veľké množstvo informácií
+    nespôsobilo informačné preťaženie je treba prácu s textom
+    automatizovať a vysporiadať sa s filtrovaním užitočných informácií
+    od tých zbytočných, čo vedie k uľahčeniu práce mnohých ľudí.
+  <citation>Rei94</citation></para>
+  <para>
+    Väčšina týchto textov je v podobe prirodzeného jazyka(slovenčina,
+    angličtina) a majú osobnú povahu, čo môže predstavovať prekážku pri
+    automatizácii. Lúdia veľmi jednoducho vedia rozlíšiť zlý text od
+    dobrého.
+  <citation>RD00</citation></para>
+  <para>
+    Manuálne písanie textov môže byť náročné na realizáciu, jednak kvôli
+    potrebe vedomostí v danej oblasti druhak, že to môže byť nudné a
+    cenovo nevýhodné a v nektorých prípadoch, kedy je textu veľmi veľa,
+    aj nemožné. Aj ľudia aj stroje by profitovali z automatizácie týchto
+    činností. Zautomatizovanie takýchto činnosti sa zaoberá NLG alebo
+    generovanie prirodzeného jazyka.
+  <citation>RD97</citation></para>
+  <para>
+    V tejto práci sa zameriame na generovanie textov konkrétne v jazyku
+    slovenskom a anglickom. Kvôli tomu, že väčšina automatizovaní
+    tvorenia textov je robená v angličtine. Predstavuje to niekoľko
+    prekážok. Slovenkých textov je pomerne málo a ešte ťažšie sa
+    získavajú, ak chceme použiť nejaký novší prístup potrebujeme veľa
+    vzorov na to ako text správne písať(nechceme to robiť manuálne).
+    Navyše slovenčina je morfologicky bohatší jazyk, používa veľa
+    prípon, predpôn a má viac časov ako angličtina. Taktiež exituje málo
+    systémov, ktoré sa o generovanie slovenského textu pokúsili, preto
+    budeme používať niečo, čo funguje na angličtinu ale vieme to použiť
+    aj na slovenčinu. Z tohto vypláva aj ďalší cieľ práce a to
+    porovnanie nejakých aktuálnych prístupov na generovanie textu v
+    slovenčine a angličtine.
+  <citation>PN17</citation></para>
+  <para>
+    Porovnanie chceme robiť kvôli tomu, že systémy majú svoj limit a tým
+    pádom že slovenčina je pomerne expresívny a syntakticky bohatý jazyk
+    ako angličtina. Preto prístupy vhodne pre angličtinu alebo iný jazyk
+    nemusia nutne byt dobré pre slovenčinu, respektíve chceme sa
+    dozvedieť ci je nejaký signifikantný rozdiel medzi rovnakým
+    systémom, ktorý sa učí iný jazyk.
+  <citation>PMB13</citation></para>
+  <para>
+    Prínosom práce ma byť porovnanie toho či prístupy použite v iných
+    jazykoch fungujú aj na slovenčine a či sa dá niečo zmysluplné
+    vygenerovať. Na ohodnotenie budeme potrebovať ľudí, ktorý text
+    ohodnotia a povedia či je dobrý na základe rôznych metrík. Dôvod pre
+    použitie ludi je ten, že text je komplexný a automatické overenie
+    správnosti je subjektívne, komplikované a nástroje, ktoré sú
+    prístupné sú nepresné môžu považovať aj zlé texty za správne.
+  <citation>NSPD17</citation></para>
+  <para>
+    Môžeme nájsť viacero definícií NLG jednou z klasických je, že NLG je
+    jednou z oborov umelej inteligencie a NLP
+	  <indexterm>
+		  <primary>Nautral Language Understanding, NLU</primary>
+		  <secondary>Natural Language Processing</secondary>
+	  </indexterm>
+	, ktorej úlohou je zvyčajne
+    z nejazyčných vstupov vygenerovať text pre rôzne domény a oblasti
+    ľudských činnosti .
+  <citation>MSL17</citation></para>
+  <para>
+    V poslednej dobre sa však na rôzne úlohy hlavne text-to-text
+    používajú prístupy, ktorých vstupom nie sú len dáta ale aj text.
+    Rozdiel medzi touto prvotnou definíciou NLG a reálnymi aplikáciami v
+    súčasnosti značí, že NLG prešlo počas posledných dvoch desaťročí
+    mnohými zmenami.
+  </para>
+  <para>
+    Vo všeobecnosti ide o generovanie textu, ktorý je priamo určený na
+    čítanie pre ľudí. Táto definícia je všeobecná a preto má NLG široké
+    využitie. Niektoré príklady využitia NLG zahŕňajú napr. generovanie
+    článkov do novín ako napríklad futbalové reportáže, zdravotnícke
+    správy, ale aj všeobecnejšie, nezávislé od domény využitia ako
+    simplifikácia alebo sumarizácia textu, generovanie parafráz,
+    prekladanie textov.
+  </para>
+
+  </chapter>
+  
+  <chapter>
+	<title> Generovanie Textu </title>
+	<para>
+    Kým výstupom NLG je skoro vždy text. Vstupom môže byť spektrum
+    údajov. Vstupom však musí byť niečo čo chceme koncovému čitateľovi
+    výstupným textom sprostredkovať, informovať ho. Príkladmi vstupu
+    môžu byť číselné údaje(data-to-text) alebo text
+    samotný(text-to-text).
+  </para>
+  <section>
+    <title>Podúlohy pri generovaní prirodzeného jazyka</title>
+    <para>
+      Dosiahnutie transformácie vstupu na výstup môže byť vykonávaný
+      rôznymi spôsobmi. Jeden z takých všeobecných prístupov opisujú
+      Reiter a Dale vo svojej knihe. V tomto prípade je celý proces
+      rozdelený na menšie podúlohy. Kde každá z týchto úloh vykoná istú
+      časť transformácie vstupu. Tieto úlohy sú nasledovné Content
+      determination, Text structuring, Sentence aggregation, reffering
+      expression generation, lexicalization a surface realization . Toto
+      rozdelenie sa stalo de-facto rozdelením v NLG
+	  <indexterm>
+		  <primary>Nautral Language Understanding, NLU</primary>
+		  <secondary>Natural Language Generation</secondary>
+	  </indexterm>
+	  , ktoré je dodnes
+      používané v niektorých systémoch, Reiter k tomuto rozdeleniu
+      dospel na základe pozorovaní a trendov v NLG systémoch.
+    </para>
+    <section>
+      <title>Content determination</title>
+      <para>
+        Alebo určovanie obsahu, slúži na určenie obsahu toho čo na konci
+        generácie chceme čitateľovi sprostredkovať. Vstup, dataset z
+        ktorého text generujeme môže obsahovať aj nadbytok informácií,
+        ktoré sú irelevantné, pre naše špecifické použitie. Táto úloha
+        je veľmi dôležitá lebo ovplyvňuje ostatné úlohy ktorú ju
+        nasledujú, ak vyberieme málo informácií konečný text môže byť
+        neúplný. Ďalšou s problémov je že určovanie obsahu je zvyčajne
+        závislé od domény v závislosti čo generujem, chcem vybrať
+        správne údaje.
+      </para>
+      <para>
+        Napr. pri generovaní článkov pre fanúšikov futbalu, sa na vstup
+        vyberú len informácie, ktoré sa väčšinou vyskytujú v článkoch
+        písaných ľuďmi.
+      </para>
+      <para>
+        Od starších prístupov prešlo na viac automatizované prístupy
+        pomocou strojového učenia alebo rozpoznávania vzorov. Kde sa
+        relevantný obsah vyberá na základe korelácie výskytu slov a
+        variácie dát.
+      </para>
+    </section>
+    <section>
+      <title>Text structuring</title>
+      <para>
+        Štrukturovanie textu slúži na zoradenie informácií získaných
+        výberom v predchádzajúcom kroku, do správneho poradia aby dávali
+        zmysel. Nesprávne poradie môže viesť k nezmyselnému textu,
+        ktorý, čitateľ nebude vedieť sledovať. V Prípade futbalových
+        článkov môžeme dáta znova organizovať do takého poradia v akom
+        by sme to našli napr. v novinách. t.j. Nadpis, úvod,
+        chronologický priebeh hry a beseda. Ak by sme začali
+        rekapituláciu zápasu od zadu, dostali by sme článok ktorý je
+        nezmyselný.
+      </para>
+    </section>
+    <section>
+      <title>Sentence aggregation</title>
+      <para>
+        Pri tejto úlohe sa stretávame s viacerými definíciami. ako
+        odstránenie redundantných informácií alebo určenie blízkosti
+        jednotlivých údajov(v jednej vete alebo vo viacerých). Výsledok
+        je však rovnaký urobiť text kompaktnejším aby bol ľahšie a
+        lepšie čitateľní. Môže to znamenať rozdiel medzi piatimi vetami
+        kde sa mení iba predmet vety a jednou vetou kde všetky tieto
+        predmety sú vyjadrené jedným slovom alebo spojené spojkami. V
+        praxi to môže znamenať rozdiel medzi nasledujúcimi výstupmi.
+      </para>
+      <itemizedlist>
+        <listitem>
+          <para>
+            Tomáš mal v pondelok na raňajky jablko.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Tomáš mal v nedeľu na raňajky jablko.
+          </para>
+        </listitem>
+      </itemizedlist>
+      <itemizedlist>
+        <listitem>
+          <para>
+            Tomáš mal celý týždeň na raňajky jablká.
+          </para>
+        </listitem>
+      </itemizedlist>
+    </section>
+    <section>
+      <title>Lexicalization</title>
+      <para>
+        Leksikalizácia znamená nájdenie správnych slov na vyjadrenie
+        informácií v texte. Jazyky zvyčajne majú synonyma, pomocou
+        ktorých môžeme text plynulejšie vyjadriť. Opakovanie rovnakých
+        výrazov môže pôsobiť repetitívne a nudne.
+      </para>
+    </section>
+    <section>
+      <title>Referring expression generation</title>
+      <para>
+        Generovanie odkazujúcich výrazov(Reffering Expression
+        Generation), slúži na tvorbu správnych odkazov pre jednotlivé
+        veci v texte, hlavne kvôli rozlíšiteľnosti. Je to zvyčajne
+        diskriminačná činnosti pri ktorej jednotlivé doménové entity
+        špecifikujeme dovtedy, kým ich vieme od ostatných entít
+        rozoznať.
+      </para>
+    </section>
+    <section>
+      <title>Surface realization</title>
+      <para>
+        Poslednou úlohou je samotné generovanie gramatický, syntaktický
+        a morfologický správneho a konkrétneho textu. Slúži na
+        pretavenie abstraktných reprezentácií ktoré sme doteraz zo
+        vstupu získali do konkrétneho jazyka.
+      </para>
+      <para>
+        Najjednoduchšie sa dá spraviť šablónami alebo predurčenými
+        statickými spravami(canned text) tieto prístupy sú však
+        primitívne a nedostatočné. Prístupy, ktoré sa používajú sú
+        zvyčajne založené na štatistických princípoch alebo na základe
+        rôznych gramatík(CCG, SGS).
+      </para>
+    </section>
+  </section>
+  <section>
+    <title>Krátka história NLG</title>
+    <para>
+      Prvé systémy, ktoré sa objavujú v 60. rokoch slúžili hlavne na
+      preklad textov z rôznych jazykov. Vo väčšine prípadov vykonávali
+      iba surface realization. Až neskôr v 70. rokoch sa objavujú
+      systémy na generovanie textu z ne-lingvistických údajov. Tieto
+      systémy poukazovali na to že NLG nie je len NLU
+	  <indexterm>
+		  <primary>Nautral Language Understanding, NLU</primary>
+		  <secondary>Natural Language Understanding</secondary>
+	  </indexterm>
+	  odzadu a taktiež
+      na vznik istých problémov pri NLG. 80. roky predstavujú obdobie
+      rozvoja NLG, odstupovalo sa od stavania monolitických systémov a
+      pristúpilo sa k skúmaniu jednotlivých podúloh pri generovaní.
+      Koncom 90. rokov väčšina architektúr používala pipeline(rúrovú)
+      architektúru s menšími zmenami. Tieto architektúry boli podobné aj
+      naprie tomu, že mali rozdielne teoretické pozadia(východiská?).
+      Taktiež rozdeľovali generovanie na podobné podúlohy. Táto
+      podobnosť pravdepodobne súvisí s tým ako ľudský mozog vytvára
+      hovorenú reč aj keď podobnosť k psycholingvistike nebol cieľom
+      týchto systémov.
+    </para>
+    <para>
+      Rúrová architektúra sa teda stala de facto štandardom. Je mnoho
+      dôvodov prečo rúrovú architektúru používať. Jedným z nich je jej
+      jednoduchosť a jednoduchosť implementácie a následné odhaľovanie
+      chýb. Vývoj takýchto systémov stojí menej námahy ako vytvárať
+      komplexné systémy. Aj keď majú svoje nedostatky ako napríklad
+      absencia spätnej väzby.
+    </para>
+  </section>
+  <section>
+    <title>Úlohy v NLG</title>
+    <para>
+      Okrem horeuvedených podúloh existujú aj iné prístupy, ktoré v sebe
+      nezahŕňajú modulárne systéme. Sem patria metódy založené na
+      strojovom učení a neuŕonových sietiach, ktoré sa učia vzťah medzi
+      vstupnými a výstupnými údajmi. Nasleduje zopár populárnych využití
+      NLG, sú to hlavne využitia pre úlohy typu text-to-text
+	  <indexterm>
+		  <primary>Prístupy generovanie textu</primary>
+		  <secondary>Text-to-text</secondary>
+	  </indexterm>
+	  . Aj keď
+      podobné prístupy môžeme použiť aj na klasické data-to-text
+	  <indexterm>
+		  <primary>Prístupy generovanie textu</primary>
+		  <secondary>Data-to-text</secondary>
+	  </indexterm>
+      generovanie.
+    </para>
+    <section>
+      <title>Parafrázovanie</title>
+      <para>
+        Parafrázovanie alebo prerozprávanie toho istého obsahu inými
+        slovami. Je užitočná činnosť, ktorá má mnoho využití v
+        kombináciou s ostatnými úlohami NLG ako sumarizácia, odpovedanie
+        otázok(question answering), strojový preklad a.i . Prístupy k
+        parafrázovaniu môžeme rozdeliť na monolingvistiské, pivotné
+        metódy a neurónové prístupy. V porovnaní prístupov metóda
+        založená na neurónovoých prístupoch mala lepšie výsledky ako
+        klasické modely založené na frázach.
+      </para>
+    </section>
+    <section>
+      <title>Simplifikácia</title>
+      <para>
+        Simplifikácia textu znamená zmenu jazykovej štruktúry pričom
+        informácie, ktoré sú v tomto texte obsiahnuté ostávajú rovnaké,
+        zmysel textu sa nemení. Hlavnou motiváciou pre simplifikácia je
+        sprístupnenie informácií menej vzdelaným ľuďom, deťom,
+        cudzincom, alebo osobám s rôznymi poruchami ,ktoré im sťažujú
+        pochopenie text ako napr. dyslexia alebo ľudia trpiaci hluchotou
+        .
+      </para>
+      <para>
+        Slabší čitatelia môžu mať problémy s čítaním komplikovanejších
+        textov keď sa mozog musí sústrediť na spracovávanie slov vyššie
+        kognitívne činnosti trpia. Ľudia trpiaci takýmito poruchami
+        musia použiť väčšiu časť pamäte na pochopenie textu. Rozdelenie
+        viet na kratšie časti spôsobuje odbremenenie od pamätanie si, a
+        zjednodušuje čítanie. Je dokázané, že metódy manuálnej
+        simplifikácie textu pomáhajú slabším čitateľom. Práve tieto
+        štúdia motivovali výskum automatizovanej simplifikácie textu.
+      </para>
+      <para>
+        Okrem ľudí simplifikácia textu môže predstavovať rôzne výhodu aj
+        pre systémy, ktoré s textom extenzívne pracujú ako napríklad
+        systémy na strojový preklad.
+      </para>
+      <para>
+        Tak ako aj vo viacerých oblastiach NLG aj pri simplifikácii sa v
+        poslednej dobe prechádza od klasických prístupov založených na
+        gramatikách, ručne písaných pravidlách na používanie neurónové
+        siete, konkrétne modely typu sequence-to-sequence, ktoré
+        dosahujú lepšie výsledky ako doteraz známe systémy . Tieto
+        systému sa učia end-to-end, a majú jednoduchšie architektúry ako
+        klasické systémy založené na rôznych štatistických prístupoch,
+        umožňuje to trénovanie modelov na základe znakov alebo aj vo
+        viacerých jazykoch. Oproti prvotným systémov tieto pristupujú k
+        celej úlohe simplifikácie ako k prekladu jazyka do jeho
+        zjednodušenej podoby.
+      </para>
+      <para>
+        Populárnou trénovacou sadou pre simplifikáciu textov sú jednak
+        manuálne simplifikované texty (gigaword duc etc.) alebo
+        paralelné korpusy napr. Anglická wikipédia a jej simplifikovaná
+        alternatíva.
+      </para>
+    </section>
+    <section>
+      <title>Sumarizácia</title>
+      <para>
+        Sumarizácia má za úlohu skrátiť text za účelom znížiť množstvo
+        textu na čítanie pričom sa zachovajú dôležité informácie v
+        texte. Hlavnou motiváciou pre takéto systémy je zníženie
+        informačného preťaženia v dobe internetu a ľahko prístupných
+        informácií.
+      </para>
+      <para>
+        Jedna z prvých pokusov o sumarizácia, ktorá sa zaoberala tvorbou
+        abstraktov z vedeckých textov, fungovala na základe toho ako
+        často sa jednotlivé slová vyskytujú a na základe tejto metriky
+        sa vybrali vety, ktoré sa použijú v koncovom texte . Tento
+        prístup je založený na tom, že autor ktorý dielo píše bude
+        dôležité slová opakovať, a nebude mať dostatok synonym. Celá
+        sumarizácia sa potom zakladá na extrakcii viet.
+      </para>
+      <para>
+        Okrem extrakcie poznáme aj ďalšie prístupy ako kompresia alebo
+        abstrakcie. Avšak kvôli tomu, že väčšina ľudských sumárov je
+        viac abstraktných, spôsoby kde sa vyberajú slová a vety z
+        pôvodného textu sú nedostatočné. Je za potreby text pochopiť a
+        následne abstraktnú myšlienku vyjadriť textom .
+      </para>
+      <para>
+        V prípade abstraktívnej sumarizácie dosahujú najlepšie výsledky
+        neurónové siete typu sequence-to-sequence .
+      </para>
+    </section>
+    <section>
+      <title>Generovanie dialógov</title>
+      <para>
+        Dialógové systémy majú za úlohu generovať odpovede pre zadané
+        otázky. Využitie takýchto systémov je možné napríklad pri
+        chatbotoch, ktoré majú za úlohu komunikovať s užívateľom v
+        prirodzenom jazyku.
+      </para>
+      <para>
+        Klasické prístupy v sebe zahŕňali výber odpovede z databázy
+        odpovedí. Tieto prístupy majú malú úroveň generalizácie a
+        možnosti odpovedí sú limitované tým pádom, že sa odpovedá na
+        základe pravidiel.
+      </para>
+      <para>
+        Novšie prístupy zahŕňajú založené na štatistickom strojovom
+        učení v sebe zahŕňajú učenie sa vzťahov medzi otázkami a
+        odpoveďami na základe nejakého korpusu. Tieto prístupy sú
+        automatizované a jediné čo potrebujeme sú páry - otázky,
+        odpovede. Najlepšie na realizácie takýchto úloh sú znova
+        sequence-to-sequence modely. Ktoré dosahujú vylepšené výsledky
+        oproti starším spôsobom.
+      </para>
+    </section>
+  </section>
+  <section>
+    <title>NLG pomocou deep learningu</title>
+    <para>
+      Ako sme mohli vidieť mnoho state of the art systémov používajú
+      neurónové siete. Tieto prístupy sa stávajú viac a viac populárnymi
+      hlavne v dnešnej dobe keď je prístupným mnoho dát a korpusov.
+    </para>
+    <para>
+      Ako však použijeme neurónové siete? Tým pádom, že naším cieľom je
+      použiť text ako vstup a z neho generovať text. budeme potrebovať
+      architektúru neurónových sietí, ktorá je na túto úlohu vhodná.
+      Klasické neurónové siete s kladnou spätnou väzbou nie sú
+      dostatočné na spracovanie sekvenčných vstupov.
+    </para>
+    <para>
+      Pre spracovanie sekvenčných dát (hudba, text atď.) je vhodné
+      používať rekurentné architektúry, hlavnou výhodnou je že tieto
+      architektúry robia rozhodnutia aj na základe vstupov ktoré už
+      dostali, nie len na základe aktuálneho vstupu. Klasické RNN
+	  <indexterm>
+		  <primary>Recurent Neural Netoworks, RNN</primary>
+		  <secondary>Simple Recurent Neural Netoworks</secondary>
+	  </indexterm> siete
+      trpia miznúcim alebo explodujúcim gradientom, ktorý je technický
+      problém ktorý nastáva pri propagácia chyby a gradient jednoducho
+      stráca, na adresovanie týchto nedostatkov boli vyvinuté
+      architektúry ako <emphasis role="strong">GRU</emphasis>
+	  <indexterm>
+		  <primary>Recurent Neural Netoworks, RNN</primary>
+		  <secondary>Gated Recurent Unit, GRU</secondary>
+	  </indexterm>
+	  alebo <emphasis role="strong">LSTM</emphasis> s tzv. hradlami(gates) ktoré
+      kontrolujú čo si neurón má zapamätať alebo zabudnúť. Všetky tieto
+      neurónky majú za úlohy naučiť sa pravdepodobnostnú funkciu, ktorá
+      zachytáva závislosť medzi vstupmi a výstupmi.
+    </para>
+    <para>
+      Viacero text-to-text NLG úloh majú na vstupe aj výstupe sekvenciu
+      znakov, pre tieto vieme použiť špeciálne architektúry
+      sequence-to-sequnce. Tieto architektúry sa zvyčajne skladajú z
+      dvoch vrstiev jedného enkódera a dekodéra.
+    </para>
+  </section>
+  </chapter>
+  
+<chapter>
+  <title>Návrh</title>
+  <para>
+    Chceme pomocou neurónovej siete namodelovať funkciu ktorá nám povie,
+    po istom počte písmen aké je najpravdepodobnejšie ďalšie písmeno.
+    Takýmto spôsobom budeme vedieť generovať texty. Celý proces môžeme
+    rozdeliť na dve podúlohy, prvá je trénovanie modelu, kedy sa model
+    učí a druhá podúloha je generovanie, pri ktorom model na základe
+    naučeného predpovedá.
+  </para>
+  <para>
+    Na trénovanie budeme potrebovať dáta, z ktorých sa náš model vie
+    naučiť pravdepodobnostné rozloženie písmen. Pre tento prípad sme si
+    zvolili Wikipédiu
+	<footnote>
+			<para>
+			Obsah celej Wikipédie v podobe textu je možné nájsť tu <ulink url="https://dumps.wikimedia.org/"/>
+			</para>
+		</footnote>
+	, kvôli svojej rozmanitosti a veľkosti. Model na
+    vstup dostane sekvenciu znakov a bude musieť predpovedať sekvenciu
+    znakov posunutú o jeden znak ďalej, takto sa naučí ako z aktuálnej
+    sekvencie vygenerovať ďalšiu sekvenciu s pridaným znakom.
+  </para>
+  <para>
+    Na generovanie si môžeme vstupnú sekvenciu vymyslieť, môže to byť
+    písmeno alebo celé slovo. A už trénovaná sieť bude vedieť povedať,
+    pravdepodobnosti toho aké by malo byť ďalšie písmeno v poradí.
+    Príkladom môže byť že mu na vstup zadáme sekvenciu &quot;abc&quot; a
+    sieť vráti pravdepodobnosti pre celý slovník v tomto prípade iba
+    a,b,c s prislúchajúcimi hodnotami ich pravdepodobnosti výskytu ako
+    ďalšie písmeno(napr. 0.2, 0.2, 0.6) potom je už na nás, ktoré si
+    vyberieme a ako.
+  </para>
+  <section>
+    <title>Opis Modelu</title>
+    <para>
+      Tým pádom že modelujeme sekvenciu znakov a závisí nám aj od
+      predchádzajúcich vstupoch nie len na konkrétnom použijeme
+      rekurentnú neurónovú sieť. Konkrétne <emphasis role="strong">LSTM</emphasis>
+	  <indexterm>
+		  <primary>Recurent Neural Netoworks, RNN</primary>
+		  <secondary>Long Short-term memory, LSTM</secondary>
+	  </indexterm>siete, ktoré nemajú
+      problém s dlhodobými závislosťami vstupov.
+    </para>
+    <para>
+      Na modelovanie a generovanie použijeme model znázornení na 
+      <link linkend="fig:nn_model">obrázku</link>. Vstup do siete
+      bude kódovaní ako one-hot vektor (každé písmeno má priradení
+      index) tento vstup sa posunie do Embedding vrstvy, ktorá má za
+      úlohu naučiť sa vektorové reprezentácie pomocou desatinnými
+      číslami pre jednotlivé vstupy, táto reprezentácia sa potom posunie
+      do <emphasis role="strong">LSTM</emphasis> vrstvy. Nakoniec výstup posunieme do lineárnej vrstvy
+      ktorá nám zredukuje výstup z <emphasis role="strong">LSTM</emphasis> vrstiev na vhodnú veľkosť, ktorý
+      potom môžeme interpretovať ako vektor pravdepodobnostných hodnoty
+      pre jednotlivé možné vstupy.
+    </para>
+    <para>
+      Konfigurácia siete je nasledujúca: embedding vrstva nám vráti
+      vektor s 200 dimenziami máme 2 vrstvy <emphasis role="strong">LSTM</emphasis> sietí, s veľkosťou 200
+      neuŕonov a na konci použijeme softmax
+    </para>
+  </section>
+  <section>
+    <title>Trénovanie Modelu</title>
+    <para>
+      Náš model budeme trénovať na slovenskom a anglickom texte, korpus
+      použijeme z wikipédie. Kvôli rozdielom vo veľkosti slovenskej a
+      anglickej wikipédie použijeme voľne dostupné texty slovenskej a
+      simplifikovanej anglickej wikipédie.
+    </para>
+    <para>
+      Trénovanie siete potom prebieha tak že každému písmenu pridelíme
+      index(one-hot vektor) zo slovníka a následne ich pošleme do nášho
+      modelu. Výslednú hodnotu porovnáme s ďalšou v poradí, váhy sa
+      vhodne upravia
+    </para>
+    <para>
+      Celú sieť trénujeme na slovenskej a anglickej wikipédie. Kvôli
+      rozdielom vo veľkosti a kvality slovenskej a anglickej wikipádii
+      použijeme len simple english wikipédiu, ktorá má porovnateľnú
+      veľkosť.
+    </para>
+  </section>
+  <section>
+    <title>Generovanie Textu</title>
+    <para>
+      V tejto fáze natrénovanej sieti pošleme písmeno a z výstupu siete
+      zistíme písmeno s najvyššou hodnotou pravdepodobnosti, ktoré sa by
+      sa mohlo vyskytnúť po vstupe tento výstup použijeme ako ďalší
+      vstup do siete, takto pokračujeme, kým nemáme dostatočné množstvo
+      textu viď obr. <link linkend="fig:nn_gen">modelu generovanie textu</link>.
+    </para>
+    <figure>
+      <title>Spôsob generovanie písmen na základe predchádzajúcich
+      písmen</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figures/model-2.png" width="60%"/>
+        </imageobject>
+        <textobject><phrase>Spôsob generovanie písmen na základe
+        predchádzajúcich písmen</phrase></textobject>
+      </mediaobject>
+    </figure>
+    <para>
+      <anchor id="fig:nn_gen" />
+    </para>
+	
+    <figure>
+      <title>Model neurónovej siete na generovanie textu</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figures/model-1.png" width="70%"/>
+        </imageobject>
+        <textobject><phrase>Model neurónovej siete na generovanie
+        textu</phrase></textobject>
+      </mediaobject>
+    </figure>
+    <para>
+      <anchor id="fig:nn_model" />
+    </para>
+  </section>
+  <section>
+    <title>implementácia</title>
+    <para>
+      Na implementáciu použijeme programovací jazyk Python
+	  <indexterm>
+		  <primary>Softvér</primary>
+		  <secondary>Python</secondary>
+	  </indexterm>
+
+		<footnote>
+			<para>
+			Väčšina kódu je dostupná na <ulink url="https://github.com/mmio/char-rnn.pytorch"/>
+			</para>
+		</footnote>
+	
+
+	  a na
+      uľahčenie práce s neurónovými sieťami knižnicu PyTorch
+	  <indexterm>
+		  <primary>Softvér</primary>
+		  <secondary>Pytorch</secondary>
+	  </indexterm>
+	  , ktorá
+      obsahuje väčšinu potrebných komponentov na poskladanie modelu.
+    </para>
+  </section>
+</chapter>
+  
+  <chapter>
+  <title>Cieľ Práce</title>
+  <para>
+    Cieľom tejto prace bude generovať text v prirodzenom jazyku, t.j.
+    určený pre ludi na čítanie. Využitie takéhoto systému potom môže byt
+    rôznorodé, slúži hlavne na automatizovanie prace pri písaní textov.
+    A automatizovanie rôznych úloh na ktoré bolo treba robiť v minulosti
+    manuálne sem spadajú už zmienené úlohy simplifikácie, sumarizácie,
+    strojového prekladu, parafrázovania a. i.
+  </para>
+  <para>
+    Pozrieme sa na oblasť NLG ako sa vyvíjala a aké v nej majú využitia
+    neuronové siete. Generovanie bude teda robene cez neuronové siete,
+    hlavne kvôli dostupnosti veľkých množstiev dát a jednoduchosti ich
+    použitia a trénovania. Ich výkon je tiež porovnateľný s inými
+    metódami v NLG, navyše odstraňujú mnoho nevýhod starších prístupov.
+  </para>
+  <para>
+    Hodnotenie výsledkov generovania bude robené na základe metrík, ale
+    kvôli komplexnosti prirodzeného jazyka a ťažkosti určenia
+    objektívnej kvality textu text bude vyhodnotený aj manuálne.
+  </para>
+  <para>
+    Pre túto prácu sme si stanovili nasledovné ciele:
+  </para>
+  
+  <itemizedlist>
+     <listitem> 
+  <para>
+    Analyzovať oblasť NLG a možnosti na generovanie textu
+  </para>
+    </listitem>
+  
+    <listitem>
+      <para>
+        Zistiť čo v sebe generovanie textu zahŕňa
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Navrhnúť a implementovať model na generovanie
+      </para>
+    </listitem>
+
+  <listitem>
+  <para>
+    Využitím NN natrénovať modely, ktoré sú schopné generovať text.
+  </para>
+  </listitem>
+
+    <listitem>
+      <para>
+        vyhodnotenie výsledkov trénovanie na slovenskom aj anglickom
+        texte z kvalitatívneho hľadiska
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Trénovanie na paralelných korpusoch
+      </para>
+    </listitem>
+  </itemizedlist>
+</chapter>
+
+<chapter>
+  <title>Vyhodnotenie</title>
+  <para>
+    Výsledky experimentu budú vyhodnotené manuálne. Na vyhodnotenie sme
+    každému testerovi dali 6 vygenerovaných textov, pričom sa
+    vyhodnocovali tieto 4 kvalitatívne parameter textu:
+  </para>
+  <itemizedlist>
+    <listitem>
+      <para>
+        Správnosť jednotlivých slov
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Morfologický tvar slov
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Slovosled
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Zmysluplnosť celého textu
+      </para>
+    </listitem>
+  </itemizedlist>
+  <para>
+    Tieto metriky sú v poradí od najkratšej závislosti písmen až po
+    najdlhšie. Spôsob vyhodnotenia bude nasledovný, zoberieme všetky
+    odpovede zvlášť pre slovenský a anglický text a vytvoríme z nich
+    priemer.
+  </para>
+  <section>
+    <title>Anglický text</title>
+    <para>
+      Výsledky hodnotenie anglických textov sú nasledovné: Zhruba 79%
+      vygenerovaných slov dávalo zmysel Slovosled bol správny v 40%
+      textov Morfológia v prípade 66% A zmysel dávalo len 23% z
+      celkových textov
+    </para>
+    <para>
+      V prípade angličtiny mala naša sieť problém hlavne zachovať nejakú
+      zmysluplnú myšlienku, kým slová a ich tvary boli pomerne dobré,
+      sieť nedokázala zachovať dostatočný súvis pre vety a celkové
+      články.
+    </para>
+  </section>
+  <section>
+    <title>Slovenský text</title>
+    <para>
+      Výsledky hodnotenie slovenských textov sú nasledovné: Zhruba 69%
+      vygenerovaných slov dávalo zmysel Slovosled bol správny v 58%
+      textov Morfológia v prípade 54% A zmysel dávalo len 17% z
+      celkových textov
+    </para>
+    <para>
+      Skoro v každej metrike bola slovenčina horšia, pravdepodobne kvôli
+      rozdielu medzi komplexnosťami jazykov. Slovenčina má pestrejšiu
+      morfológiu a slová sa dajú ohýbať do viacerých tvarov.
+    </para>
+    <para>
+      Z výsledkov hodnotenia vyplýva, že aj napriek jednoduchosti nášho
+      modelu bol schopný sa naučiž krátkodobé závisloti ktoré nám dávali
+      zmysluplné slová, čo sa týka komplikovanejších vecí ako súvis a
+      závislosť jednotlivých častí textov, na ktoré sa siet potrebuje
+      naučiť dlhšie závisloti, sieť nebola schopná zapamätať si vzťahy,
+      pomohla by asi pozornosť.
+    </para>
+    <para>
+      |l|
+    </para>
+    <table>
+      <title>
+        <anchor id="tab:gen-text-en" />Ukážka vygenerovaného
+        anglického textu.
+      </title>
+      <tgroup cols="1">
+        <colspec align="left" />
+        <tbody>
+          <row>
+            <entry>
+              John Cheerny
+              John Leyn Show (August 24, 1940 0 February 23, 1987) was
+              an American singer-songwriter and worldwide. He acted in
+              the band for songs for the 1990s to the &quot;Michael
+              Albert Andrew &amp; Ort&quot;. He was set during the
+              mid-1990s. He won a former club which became a character
+              for the business Adele Shelley dollar women’s song book
+              &quot;Raw&quot; as NXT War Railway from the 2001 census.
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+<literallayout>
+</literallayout>
+    <table>
+      <title>
+        <anchor id="tab:gen-text-sk" />Ukážka vygenerovaného
+        slovenského textu.
+      </title>
+      <tgroup cols="1">
+        <colspec align="left" />
+        <tbody>
+          <row>
+            <entry>
+              Saint-Martin
+              Saint-Maritre je francúzska obec, ktorá sa nachádza v
+              departemente Orne, v regióne Dolná Normandia.
+              Obec má rozlohu . Najvyšší bod je položený a najnižší bod
+              Počet obyvateľov obce je ().
+              Nasledujúci graf zobrazuje vývoj počtu obyvateľov v obci.
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+<literallayout>
+</literallayout>
+  </section>
+</chapter>
+
+  
+  <appendix>
+    <title>Ukážka vygenerovaného textu v slovenčine</title>
+
+<para>A čo mali prečítať protifičné miestna #nedelo :-) @user @user @user @user @user #hadlo #presov #volejbal #koleka #video @</para>
+
+<para>A ty tentokrát pripomína na tejto srdce proti svojej politicke dom aj na strednej nápojenie v Babiáku!: Po rokoch rekord </para>
+
+<para>Ako na nás partneria na predstavenie nebezpečného médií @user #kradla #presov #výkonnica #presov #vysoket @user @user @us</para>
+
+<para>A je to tumbolle či nenechám, dnes večer brutálne z jeho hviezdych sociálnych hráčov s prechádzkou sa idu... @user @user </para>
+
+<para>Aktuálne stretnutie prednáškou v rodine v českej školstave 2.12. Martin v S pozornom podvode v BA bol veľa svojmu... @use</para>
+
+<para>Autor zacal sebavedidujúce miesto AngelsHorty Gáborín Chande, Martin, Josel Club (firme) a Prečo je to pokračujú... @user</para>
+
+<para>A prosim to bolo sa aj na ebolu. A o vami ma aj o pomale... @user #demo #staratrznica #data #troca #17mster @user @user #</para>
+
+<para>Ak si zastavoval ešte poslal stojí, výhercu je najlepšie a komunikácie ministerky už vie @user #got #foto #presov #volby </para>
+
+<para>Ako precvičím nám dnes o 2000: Bolo to posledne sledovať ako po práve takto co by som si... na praci? @user @user #presov</para>
+
+<para>Ako sa k výhramení v kole? Príbeh na kurze zoznam všetkým si prekvapíme ze to budeme možnosť" @user @user @user &amp; @us</para>
+
+<para>Apple s svadby - novinka @user (@ Železnicu) @user in Bratislava) @user @user a @user @user @user @user @user @user @user</para>
+
+<para>A teraz sa pozreli o poriadku a počítač poradím od M2 sa pravda na nové veci. Tentoraz Kralovej a dobré a ctipy! @user #h</para>
+
+<para>Ako môže tento piatok pre #SND? Všetci sme mali tvár v Bratislave komunita pre Vás dostal do tisíc vráť @user @user @user</para>
+
+<para>A o tom, čo vám niekto mega zacinal na Slovensku? via @user @user @user @user @user @user ja :DViac ako uspevnení tomu, a</para>
+
+<para>Aký tomu má takto som robí od Čelec (Estan postupne povenovanie už podobne súd rodič. @user #hokej @user #hokej #foto #mi</para>
+
+<para>A je to bolo ani ne minimaly a teraz je bez. Top vy skutočne pod akodrajni realitailne 20.11 - dlhodobeje. #terming #base</para>
+
+<para>Ako to zasiahol tretí farebe @user via @user @user @user , IFTTT, Nie Roja Idea Villain Deep Fico z formuly @user via @us</para>
+
+<para>Aký je zasa zlogusáte? :) @user @user Vyčítal som, nie len na víkend na stránke na kontexte, baberné... @user @user #pres</para>
+
+<para>Ak nechtáti by ste si získali veľký páro :) akujeme. @user @user @user @user @user @user až zabudli len 10 a... @user @us</para>
+
+<para>Ako sa bude v Bratislave a pozrite sa aj vybavili. Mají v balkáqu, tak nič drsne viac. A potom nemôžete sa s fotosom na z</para>
+
+<para>Ako sa nahotom s bielej noci v Klub Jozefa @user #hokej #presov #svk1992 @user @user @user @user @user @user @user @user </para>
+    
+  </appendix>
+
+  
+<bibliography>
+  <biblioentry role="inproceedings" id="AbuAli2016Botta">
+    <abbrev id="AbuAli2016Botta.abbrev">AAH16</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Dana</firstname><surname>Abu Ali</surname></author><author><firstname>Nizar</firstname><surname>Habash</surname></author></authorgroup>
+      <title>Botta: An arabic dialect chatbot</title>
+      <pagenums>208--212</pagenums>
+      <bibliosource
+	  class="uri">http://aclweb.org/anthology/C16-2044</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of COLING 2016, the 26th International
+      Conference on Computational Linguistics: System
+      Demonstrations</conftitle></confgroup>
+      <pubdate>2016</pubdate>
+      <publishername>The COLING 2016 Organizing Committee</publishername>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="Banko2004ngrams">
+    <abbrev id="Banko2004ngrams.abbrev">BV04</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Michele</firstname><surname>Banko</surname></author><author><firstname>Lucy</firstname><surname>Vanderwende</surname></author></authorgroup>
+      <title>Using n-grams to understand the nature of summaries</title>
+      <bibliosource
+	  class="uri">http://aclweb.org/anthology/N04-4001</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of HLT-NAACL 2004: Short
+      Papers</conftitle></confgroup>
+      <pubdate>2004</pubdate>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="Chandrasekar1996simplmoti">
+    <abbrev id="Chandrasekar1996simplmoti.abbrev">CDS96</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>R.</firstname><surname>Chandrasekar</surname></author><author><firstname>Christine</firstname><surname>Doran</surname></author><author><firstname>B.</firstname><surname>Srinivas</surname></author></authorgroup>
+      <title>Motivations and methods for text simplification</title>
+      <bibliosource
+	  class="uri">http://aclweb.org/anthology/C96-2183</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>COLING 1996 Volume 2: The 16th International
+      Conference on Computational Linguistics</conftitle></confgroup>
+      <pubdate>1996</pubdate>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="Colin2018para">
+    <abbrev id="Colin2018para.abbrev">CG18</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Emilie</firstname><surname>Colin</surname></author><author><firstname>Claire</firstname><surname>Gardent</surname></author></authorgroup>
+      <title>Generating syntactic paraphrases</title>
+      <pagenums>937--943</pagenums>
+      <bibliosource
+	  class="uri">http://aclweb.org/anthology/D18-1113</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of the 2018 Conference on Empirical
+      Methods in Natural Language Processing</conftitle></confgroup>
+      <pubdate>2018</pubdate>
+      <publishername>Association for Computational Linguistics</publishername>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="Coster2011simplenwiki">
+    <abbrev id="Coster2011simplenwiki.abbrev">CK11</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>William</firstname><surname>Coster</surname></author><author><firstname>David</firstname><surname>Kauchak</surname></author></authorgroup>
+      <title>Simple english wikipedia: A new text simplification task</title>
+      <pagenums>665--669</pagenums>
+      <bibliosource
+	  class="uri">http://aclweb.org/anthology/P11-2117</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of the 49th Annual Meeting of the
+      Association for Computational Linguistics: Human Language
+      Technologies</conftitle></confgroup>
+      <pubdate>2011</pubdate>
+      <publishername>Association for Computational Linguistics</publishername>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="cho2014learning">
+    <abbrev id="cho2014learning.abbrev">CvMG+14</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Kyunghyun</firstname><surname>Cho</surname></author><author><firstname>Bart</firstname><surname>van
+      Merrienboer</surname></author><author><firstname>Caglar</firstname><surname>Gulcehre</surname></author><author><firstname>Dzmitry</firstname><surname>Bahdanau</surname></author><author><firstname>Fethi</firstname><surname>Bougares</surname></author><author><firstname>Holger</firstname><surname>Schwenk</surname></author><author><firstname>Yoshua</firstname><surname>Bengio</surname></author></authorgroup>
+      <title>Learning phrase representations using rnn encoder--decoder for
+      statistical machine translation</title>
+      <pagenums>1724--1734</pagenums>
+      <bibliosource
+	  class="uri">http://www.aclweb.org/anthology/D14-1179</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of the 2014 Conference on Empirical
+      Methods in Natural Language Processing (EMNLP)</conftitle><address>Doha,
+      Qatar</address></confgroup>
+      <pubdate>October 2014</pubdate>
+      <publishername>Association for Computational Linguistics</publishername>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="Dalianis1996lexagrord">
+    <abbrev id="Dalianis1996lexagrord.abbrev">DH96</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Hercules</firstname><surname>Dalianis</surname></author><author><firstname>Eduard</firstname><surname>Hovy</surname></author></authorgroup>
+      <title>On lexical aggregation and ordering</title>
+      <bibliosource
+	  class="uri">http://www.aclweb.org/anthology/W96-0508</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Eighth International Natural Language Generation
+      Workshop (Posters and Demonstrations)</conftitle></confgroup>
+      <pubdate>1996</pubdate>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="rogerpaul2002whatisnlg">
+    <abbrev id="rogerpaul2002whatisnlg.abbrev">EPC02</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Roger</firstname><surname>Evans</surname></author><author><firstname>Paul</firstname><surname>Piwek</surname></author><author><firstname>Lynne</firstname><surname>Cahill</surname></author></authorgroup>
+      <title>What is nlg?</title>
+      <pagenums>144--151</pagenums>
+      <bibliosource
+	  class="uri">http://www.aclweb.org/anthology/W02-2119</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of the International Natural Language
+      Generation Conference</conftitle></confgroup>
+      <pubdate>2002</pubdate>
+      <publishername>Association for Computational Linguistics</publishername>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="article" id="gatt2018survey">
+    <abbrev id="gatt2018survey.abbrev">GK18</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Albert</firstname><surname>Gatt</surname></author><author><firstname>Emiel</firstname><surname>Krahmer</surname></author></authorgroup>
+      <title>Survey of the state of the art in natural language generation:
+      Core tasks, applications and evaluation</title>
+      <pagenums>65--170</pagenums>
+    </biblioset>
+    <biblioset role="journal">
+      <title>Journal of Artificial Intelligence Research</title>
+      <volumenum>61</volumenum>
+      <pubdate>2018</pubdate>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="gattreiter2009simplenlg">
+    <abbrev id="gattreiter2009simplenlg.abbrev">GR09</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Albert</firstname><surname>Gatt</surname></author><author><firstname>Ehud</firstname><surname>Reiter</surname></author></authorgroup>
+      <title>Simplenlg: A realisation engine for practical applications</title>
+      <pagenums>90--93</pagenums>
+      <bibliosource
+	  class="uri">http://www.aclweb.org/anthology/W09-0613</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of the 12th European Workshop on
+      Natural Language Generation (ENLG 2009)</conftitle></confgroup>
+      <pubdate>2009</pubdate>
+      <publishername>Association for Computational Linguistics</publishername>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="Guo2008ngradep">
+    <abbrev id="Guo2008ngradep.abbrev">GvGW08</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Yuqing</firstname><surname>Guo</surname></author><author><firstname>Josef</firstname><surname>van
+      Genabith</surname></author><author><firstname>Haifeng</firstname><surname>Wang</surname></author></authorgroup>
+      <title>Dependency-based n-gram models for general purpose sentence
+      realisation</title>
+      <pagenums>297--304</pagenums>
+      <bibliosource
+	  class="uri">http://aclweb.org/anthology/C08-1038</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of the 22nd International Conference on
+      Computational Linguistics (Coling 2008)</conftitle></confgroup>
+      <pubdate>2008</pubdate>
+      <publishername>Coling 2008 Organizing Committee</publishername>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="article" id="hochreiter1997long">
+    <abbrev id="hochreiter1997long.abbrev">HS97</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Sepp</firstname><surname>Hochreiter</surname></author><author><firstname>Jürgen</firstname><surname>Schmidhuber</surname></author></authorgroup>
+      <title>Long short-term memory</title>
+      <pagenums>1735--1780</pagenums>
+    </biblioset>
+    <biblioset role="journal">
+      <title>Neural computation</title>
+      <volumenum>9</volumenum><issuenum>8</issuenum>
+      <pubdate>1997</pubdate>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="Inui2003simplassist">
+    <abbrev id="Inui2003simplassist.abbrev">IFT+03</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Kentaro</firstname><surname>Inui</surname></author><author><firstname>Atsushi</firstname><surname>Fujita</surname></author><author><firstname>Tetsuro</firstname><surname>Takahashi</surname></author><author><firstname>Ryu</firstname><surname>Iida</surname></author><author><firstname>Tomoya</firstname><surname>Iwakura</surname></author></authorgroup>
+      <title>Text simplification for reading assistance: A project note</title>
+      <bibliosource
+	  class="uri">http://aclweb.org/anthology/W03-1602</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of the Second International Workshop on
+      Paraphrasing</conftitle></confgroup>
+      <pubdate>2003</pubdate>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="langkilde2002ngramgen">
+    <abbrev id="langkilde2002ngramgen.abbrev">LG02</abbrev>
+    <biblioset role="article">
+      <author><firstname>Irene</firstname><surname>Langkilde-Geary</surname></author>
+      <title>An empirical verification of coverage and correctness for a
+      general-purpose sentence generator</title>
+      <pagenums>17--24</pagenums>
+      <bibliosource
+	  class="uri">http://aclweb.org/anthology/W02-2103</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of the International Natural Language
+      Generation Conference</conftitle></confgroup>
+      <pubdate>2002</pubdate>
+      <publishername>Association for Computational Linguistics</publishername>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="Piji2017deepabssum">
+    <abbrev id="Piji2017deepabssum.abbrev">LLBW17</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Piji</firstname><surname>Li</surname></author><author><firstname>Wai</firstname><surname>Lam</surname></author><author><firstname>Lidong</firstname><surname>Bing</surname></author><author><firstname>Zihao</firstname><surname>Wang</surname></author></authorgroup>
+      <title>Deep recurrent generative decoder for abstractive text
+      summarization</title>
+      <pagenums>2091--2100</pagenums>
+      <bibliosource
+	  class="uri">http://aclweb.org/anthology/D17-1222</bibliosource>
+      <bibliosource class="doi">10.18653/v1/D17-1222</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of the 2017 Conference on Empirical
+      Methods in Natural Language Processing</conftitle></confgroup>
+      <pubdate>2017</pubdate>
+      <publishername>Association for Computational Linguistics</publishername>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="article" id="luhn1958autoabstract">
+    <abbrev id="luhn1958autoabstract.abbrev">Luh58</abbrev>
+    <biblioset role="article">
+      <author><firstname>Hans Peter</firstname><surname>Luhn</surname></author>
+      <title>The automatic creation of literature abstracts</title>
+      <pagenums>159--165</pagenums>
+    </biblioset>
+    <biblioset role="journal">
+      <title>IBM Journal of research and development</title>
+      <volumenum>2</volumenum><issuenum>2</issuenum>
+      <pubdate>1958</pubdate>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="Lapouras2016Imitation">
+    <abbrev id="Lapouras2016Imitation.abbrev">LV16</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Gerasimos</firstname><surname>Lampouras</surname></author><author><firstname>Andreas</firstname><surname>Vlachos</surname></author></authorgroup>
+      <title>Imitation learning for language generation from unaligned
+      data</title>
+      <pagenums>1101--1112</pagenums>
+      <bibliosource
+	  class="uri">http://aclweb.org/anthology/C16-1105</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of COLING 2016, the 26th International
+      Conference on Computational Linguistics: Technical
+      Papers</conftitle></confgroup>
+      <pubdate>2016</pubdate>
+      <publishername>The COLING 2016 Organizing Committee</publishername>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="Mallinson2017parawmt">
+    <abbrev id="Mallinson2017parawmt.abbrev">MSL17</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Jonathan</firstname><surname>Mallinson</surname></author><author><firstname>Rico</firstname><surname>Sennrich</surname></author><author><firstname>Mirella</firstname><surname>Lapata</surname></author></authorgroup>
+      <title>Paraphrasing revisited with neural machine translation</title>
+      <pagenums>881--893</pagenums>
+      <bibliosource
+	  class="uri">http://aclweb.org/anthology/E17-1083</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of the 15th Conference of the European
+      Chapter of the Association for Computational Linguistics: Volume 1, Long
+      Papers</conftitle></confgroup>
+      <pubdate>2017</pubdate>
+      <publishername>Association for Computational Linguistics</publishername>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="article" id="nenkova2011autosum">
+    <abbrev id="nenkova2011autosum.abbrev">NM+11</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Ani</firstname><surname>Nenkova</surname></author><author><firstname>Kathleen</firstname><surname>McKeown</surname></author><author><firstname></firstname><surname>others</surname></author></authorgroup>
+      <title>Automatic summarization</title>
+      <pagenums>103--233</pagenums>
+    </biblioset>
+    <biblioset role="journal">
+      <title>Foundations and Trends in Information
+      Retrieval</title>
+      <volumenum>5</volumenum><issuenum>2--3</issuenum>
+      <pubdate>2011</pubdate>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="Nisioi2017simplexpl">
+    <abbrev id="Nisioi2017simplexpl.abbrev">NSPD17</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Sergiu</firstname><surname>Nisioi</surname></author><author><firstname>Sanja</firstname><surname>Stajner</surname></author><author><firstname>Simone Paolo</firstname><surname>Ponzetto</surname></author><author><firstname>Liviu P.</firstname><surname>Dinu</surname></author></authorgroup>
+      <title>Exploring neural text simplification models</title>
+      <pagenums>85--91</pagenums>
+      <bibliosource
+	  class="uri">http://aclweb.org/anthology/P17-2014</bibliosource>
+      <bibliosource class="doi">10.18653/v1/P17-2014</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of the 55th Annual Meeting of the
+      Association for Computational Linguistics (Volume 2: Short
+      Papers)</conftitle></confgroup>
+      <pubdate>2017</pubdate>
+      <publishername>Association for Computational Linguistics</publishername>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="Nallapati2016sums2s">
+    <abbrev id="Nallapati2016sums2s.abbrev">NZdS+16</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Ramesh</firstname><surname>Nallapati</surname></author><author><firstname>Bowen</firstname><surname>Zhou</surname></author><author><firstname>Cicero</firstname><surname>dos
+      Santos</surname></author><author><firstname>Caglar</firstname><surname>Gulcehre</surname></author><author><firstname>Bing</firstname><surname>Xiang</surname></author></authorgroup>
+      <title>Abstractive text summarization using sequence-to-sequence rnns and
+      beyond</title>
+      <pagenums>280--290</pagenums>
+      <bibliosource
+	  class="uri">http://aclweb.org/anthology/K16-1028</bibliosource>
+      <bibliosource class="doi">10.18653/v1/K16-1028</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of The 20th SIGNLL Conference on
+      Computational Natural Language Learning</conftitle></confgroup>
+      <pubdate>2016</pubdate>
+      <publishername>Association for Computational Linguistics</publishername>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="pascanu2013difficulty">
+    <abbrev id="pascanu2013difficulty.abbrev">PMB13</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Razvan</firstname><surname>Pascanu</surname></author><author><firstname>Tomas</firstname><surname>Mikolov</surname></author><author><firstname>Yoshua</firstname><surname>Bengio</surname></author></authorgroup>
+      <title>On the difficulty of training recurrent neural networks</title>
+      <pagenums>1310--1318</pagenums>
+      <bibliosource
+	  class="uri">http://proceedings.mlr.press/v28/pascanu13.html</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of the 30th International Conference on
+      Machine Learning</conftitle><address>Atlanta, Georgia,
+      USA</address></confgroup>
+      <authorgroup><editor><firstname>Sanjoy</firstname><surname>Dasgupta</surname></editor><editor><firstname>David</firstname><surname>McAllester</surname></editor></authorgroup>
+      <subtitle role="series">Proceedings of Machine Learning
+      Research</subtitle>
+      <pubdate>17--19 Jun 2013</pubdate>
+      <publishername>PMLR</publishername>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="article" id="perera2017recentnlgadv">
+    <abbrev id="perera2017recentnlgadv.abbrev">PN17</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Rivindu</firstname><surname>Perera</surname></author><author><firstname>Parma</firstname><surname>Nand</surname></author></authorgroup>
+      <title>Recent advances in natural language generation: A survey and
+      classification of the empirical literature</title>
+      <pagenums>1--32</pagenums>
+    </biblioset>
+    <biblioset role="journal">
+      <title>Computing and Informatics</title>
+      <volumenum>36</volumenum><issuenum>1</issuenum>
+      <pubdate>2017</pubdate>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="article" id="reiter1997building">
+    <abbrev id="reiter1997building.abbrev">RD97</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Ehud</firstname><surname>Reiter</surname></author><author><firstname>Robert</firstname><surname>Dale</surname></author></authorgroup>
+      <title>Building applied natural language generation systems</title>
+      <pagenums>57--87</pagenums>
+    </biblioset>
+    <biblioset role="journal">
+      <title>Natural Language Engineering</title>
+      <volumenum>3</volumenum><issuenum>1</issuenum>
+      <pubdate>1997</pubdate>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="book" id="reiterdale2000buildingnlgsystems">
+    <abbrev id="reiterdale2000buildingnlgsystems.abbrev">RD00</abbrev>
+    <authorgroup><author><firstname>Ehud</firstname><surname>Reiter</surname></author><author><firstname>Robert</firstname><surname>Dale</surname></author></authorgroup>
+    <title>Building natural language generation systems</title>
+    <publishername>Cambridge university press</publishername>
+    <pubdate>2000</pubdate>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="reiter1994consensusarch">
+    <abbrev id="reiter1994consensusarch.abbrev">Rei94</abbrev>
+    <biblioset role="article">
+      <author><firstname>Ehud</firstname><surname>Reiter</surname></author>
+      <title>Has a consensus nl generation architecture appeared, and is it
+      psycholinguistically plausible?</title>
+      <pagenums>163--170</pagenums>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of the Seventh International Workshop
+      on Natural Language Generation</conftitle><confsponsor>Association for
+      Computational Linguistics</confsponsor></confgroup>
+      <pubdate>1994</pubdate>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="article" id="siddharthan2014simpl">
+    <abbrev id="siddharthan2014simpl.abbrev">Sid14</abbrev>
+    <biblioset role="article">
+      <author><firstname>Advaith</firstname><surname>Siddharthan</surname></author>
+      <title>A survey of research on text simplification</title>
+      <pagenums>259--298</pagenums>
+    </biblioset>
+    <biblioset role="journal">
+      <title>ITL-International Journal of Applied Linguistics</title>
+      <volumenum>165</volumenum><issuenum>2</issuenum>
+      <pubdate>2014</pubdate>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="incollection" id="sutskever2014sequence">
+    <abbrev id="sutskever2014sequence.abbrev">SVL14</abbrev>
+    <biblioset role="chapter">
+      <authorgroup><author><firstname>Ilya</firstname><surname>Sutskever</surname></author><author><firstname>Oriol</firstname><surname>Vinyals</surname></author><author><firstname>Quoc V</firstname><surname>Le</surname></author></authorgroup>
+      <title>Sequence to sequence learning with neural networks</title>
+    </biblioset>
+    <biblioset role="collection">
+      <title>Advances in Neural Information Processing Systems 27</title>
+      <authorgroup><editor><firstname>Z.</firstname><surname>Ghahramani</surname></editor><editor><firstname>M.</firstname><surname>Welling</surname></editor><editor><firstname>C.</firstname><surname>Cortes</surname></editor><editor><firstname>N. D.</firstname><surname>Lawrence</surname></editor><editor><firstname>K. Q.</firstname><surname>Weinberger</surname></editor></authorgroup>
+      <publishername>Curran Associates, Inc.</publishername>
+      <pubdate>2014</pubdate>
+    </biblioset>
+    <bibliosource
+	class="uri">http://papers.nips.cc/paper/5346-sequence-to-sequence-learning-with-neural-networks.pdf</bibliosource>
+  </biblioentry>
+
+  <biblioentry role="inproceedings"
+	       id="vanderleekrahmerwubben2017PASS">
+    <abbrev id="vanderleekrahmerwubben2017PASS.abbrev">vdLKW17</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Chris</firstname><surname>van der
+      Lee</surname></author><author><firstname>Emiel</firstname><surname>Krahmer</surname></author><author><firstname>Sander</firstname><surname>Wubben</surname></author></authorgroup>
+      <title>Pass: A dutch data-to-text system for soccer, targeted towards
+      specific audiences</title>
+      <pagenums>95--104</pagenums>
+      <bibliosource
+	  class="uri">http://www.aclweb.org/anthology/W17-3513</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of the 10th International Conference on
+      Natural Language Generation</conftitle><address>Santiago de Compostela,
+      Spain</address></confgroup>
+      <pubdate>September 2017</pubdate>
+      <publishername>Association for Computational Linguistics</publishername>
+    </biblioset>
+  </biblioentry>
+
+  <biblioentry role="inproceedings" id="Wu2018dialog">
+    <abbrev id="Wu2018dialog.abbrev">WMK18</abbrev>
+    <biblioset role="article">
+      <authorgroup><author><firstname>Xianchao</firstname><surname>Wu</surname></author><author><firstname>Ander</firstname><surname>Martinez</surname></author><author><firstname>Momo</firstname><surname>Klyen</surname></author></authorgroup>
+      <title>Dialog generation using multi-turn reasoning neural
+      networks</title>
+      <pagenums>2049--2059</pagenums>
+      <bibliosource
+	  class="uri">http://aclweb.org/anthology/N18-1186</bibliosource>
+      <bibliosource class="doi">10.18653/v1/N18-1186</bibliosource>
+    </biblioset>
+    <biblioset role="proceedings">
+      <confgroup><conftitle>Proceedings of the 2018 Conference of the North
+      American Chapter of the Association for Computational Linguistics: Human
+      Language Technologies, Volume 1 (Long Papers)</conftitle></confgroup>
+      <pubdate>2018</pubdate>
+      <publishername>Association for Computational Linguistics</publishername>
+    </biblioset>
+  </biblioentry>
+
+</bibliography>
+
+  
+  <index/>
+</book>

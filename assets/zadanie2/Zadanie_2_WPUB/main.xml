@@ -1,0 +1,831 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE article>
+<article
+  xmlns="http://docbook.org/ns/docbook" version="5.0"
+  xmlns:xlink="http://www.w3.org/1999/xlink" >
+  <info>
+    <title></title>
+  </info>
+<literallayout>
+<emphasis role="strong"></emphasis>
+Generovanie textu v slovenčine<emphasis role="strong"></emphasis>
+</literallayout>
+<para>
+  máj 2019
+</para>
+<literallayout><emphasis role="strong">Anotácia</emphasis>
+</literallayout>
+<literallayout>Slovenská technická univerzita v Bratislave
+FAKULTA INFORMATIKY A INFORMAČNÝCH TECHNOLÓGIÍ
+Študijný program: Informatika
+Autor: Dominik Vasko
+Vedúci práce: Ing. Samuel Pecár
+máj 2019
+
+V tejto práci sa budeme zaoberať generovaním textov pre ľudí, ktoré sú určený na čítanie a majú podobu prirodzeného jazyka. Práca obsahuje analýzu oblasti generovania textov prirodzeného jazyka a jednotlivých využití generovaných textov ako sumarizácia, simplifikácia, parafrázovanie a generovanie dialógov, ich vývoj a súčasný stav pre tieto úlohy.</literallayout>
+<para>
+  Súčasťou práce je aj návrh a implementácia modelu na generovanie textu
+  na ktoré budú použité hlboké rekurentné neurónové siete, ktoré
+  dosahujú v poslednej dobe úspech v tejto oblasti a zďaleka najlepšie
+  výsledky. Samotné generovanie textu bude robené v jazyku slovenskom a
+  anglickom, účelom implementácie modelu v dvoch jazykoch je hlavne
+  porovnanie rôznych prístupov pre rôzne jazyky.
+</para>
+<para>
+  Všetky experimenty budú robené na paralelných korpusoch podobnej
+  veľkosti a z podobných voľne prístupných zdrojov ako napr. Wikipédia.
+  Evaluácia výsledkov experimentov bude robená manuálne ľudskou silou
+  metódou hodnotenia metrík generovaného text. Dôvodom pre manuálne
+  hodnotenie je, že ľuďmi čitateľný text je komplexný a automatizované
+  hodnotenie nie je vždy vhodné.
+</para>
+<literallayout><emphasis role="strong">Annotation</emphasis>
+</literallayout>
+<literallayout>Slovak University of Technology Bratislava
+FACULTY OF INFORMATICS AND INFORMATION TECHNOLOGIES
+Degree Course: Information systems
+Author: Dominik Vasko
+Supervisor: Ing. Samuel Pecár
+2019, May
+
+The goal of this works is to generate text in a natural language which is readable to humans, it contains an analysis of the natural language generation field and its uses like text summarization, simplification, paraphrasing and dialog generation and their evolution.</literallayout>
+<para>
+  Part of this work is a design and implementation of a model for text
+  generation. Deep recurent neural networks will be used for that task,
+  the reason for that is their efficiency and the fact the most
+  state-of-the art models use them. Texts will be generated in Slovak
+  and English languages to demostrate differences between those
+  languages from the context of NLG.
+</para>
+<para>
+  All models used will be trained on a paralel corpuses of similar size
+  for example from Wikipedia. The evaulation of the results will be done
+  manualy with human power by evaluating metrics. The reason for that is
+  mainly the complexity of natural languags where automated evaluation
+  is not suficient.
+</para>
+<section xml:id="úvod">
+  <title>Úvod</title>
+  <para>
+    Zrak,hmat a sluch sú tromi našimi najdôležitejšími vnemami, pomocou
+    ktorých prijímame veľké množstvo informácií a bez ktorých by sme sa
+    ťažko v živote zaobišli. Práve preto text, či už vo viditeľnej,
+    hmatateľnej alebo zvukovej podobe predstavuje dôležité médium na
+    prenášanie, komunikáciu a organizovanie dát a informácií, ktoré má
+    hlavne v dnešnej dobe internetu a sociálnych sietí veľmi dôležitú
+    rolu.
+  </para>
+  <para>
+    Čím viac sa spoločnosť blíži k viac digitálnej kde informácií je
+    veľmi veľa bude treba tvoriť ale aj vstrebávať a organizovať viac a
+    viac textov. Google, Wikipédia, protokoly ako html ktoré nám
+    umožňujú prispievať obsah na internet, blogy, magazíny, knihy,
+    noviny, väčšina obsahu na sociálnych sietiach a na internete atď. sú
+    tvorené veľkým množstvom textov.
+  </para>
+  <para>
+    Nie len digitálne ale aj mnoho klasických ľudských aktivít v sebe
+    zahŕňa tvorbu alebo vstrebávanie nejakých druhov textov či je to
+    obyčajná medziľudská komunikácia alebo písanie na papier.
+  </para>
+  <para>
+    Práca s textom sa týka mnohých oborov od študentov, sekretárok až po
+    softvérových architektov a manažérov. Aby veľké množstvo informácií
+    nespôsobilo informačné preťaženie je treba prácu s textom
+    automatizovať a vysporiadať sa s filtrovaním užitočných informácií
+    od tých zbytočných, čo vedie k uľahčeniu práce mnohých ľudí.
+  </para>
+  <para>
+    Väčšina týchto textov je v podobe prirodzeného jazyka(slovenčina,
+    angličtina) a majú osobnú povahu, čo môže predstavovať prekážku pri
+    automatizácii. Lúdia veľmi jednoducho vedia rozlíšiť zlý text od
+    dobrého.
+  </para>
+  <para>
+    Manuálne písanie textov môže byť náročné na realizáciu, jednak kvôli
+    potrebe vedomostí v danej oblasti druhak, že to môže byť nudné a
+    cenovo nevýhodné a v nektorých prípadoch, kedy je textu veľmi veľa,
+    aj nemožné. Aj ľudia aj stroje by profitovali z automatizácie týchto
+    činností. Zautomatizovanie takýchto činnosti sa zaoberá NLG alebo
+    generovanie prirodzeného jazyka.
+  </para>
+  <para>
+    V tejto práci sa zameriame na generovanie textov konkrétne v jazyku
+    slovenskom a anglickom. Kvôli tomu, že väčšina automatizovaní
+    tvorenia textov je robená v angličtine. Predstavuje to niekoľko
+    prekážok. Slovenkých textov je pomerne málo a ešte ťažšie sa
+    získavajú, ak chceme použiť nejaký novší prístup potrebujeme veľa
+    vzorov na to ako text správne písať(nechceme to robiť manuálne).
+    Navyše slovenčina je morfologicky bohatší jazyk, používa veľa
+    prípon, predpôn a má viac časov ako angličtina. Taktiež exituje málo
+    systémov, ktoré sa o generovanie slovenského textu pokúsili, preto
+    budeme používať niečo, čo funguje na angličtinu ale vieme to použiť
+    aj na slovenčinu. Z tohto vypláva aj ďalší cieľ práce a to
+    porovnanie nejakých aktuálnych prístupov na generovanie textu v
+    slovenčine a angličtine.
+  </para>
+  <para>
+    Porovnanie chceme robiť kvôli tomu, že systémy majú svoj limit a tým
+    pádom že slovenčina je pomerne expresívny a syntakticky bohatý jazyk
+    ako angličtina. Preto prístupy vhodne pre angličtinu alebo iný jazyk
+    nemusia nutne byt dobré pre slovenčinu, respektíve chceme sa
+    dozvedieť ci je nejaký signifikantný rozdiel medzi rovnakým
+    systémom, ktorý sa učí iný jazyk.
+  </para>
+  <para>
+    Prínosom práce ma byť porovnanie toho či prístupy použite v iných
+    jazykoch fungujú aj na slovenčine a či sa dá niečo zmysluplné
+    vygenerovať. Na ohodnotenie budeme potrebovať ľudí, ktorý text
+    ohodnotia a povedia či je dobrý na základe rôznych metrík. Dôvod pre
+    použitie ludi je ten, že text je komplexný a automatické overenie
+    správnosti je subjektívne, komplikované a nástroje, ktoré sú
+    prístupné sú nepresné môžu považovať aj zlé texty za správne.
+  </para>
+  <para>
+    Môžeme nájsť viacero definícií NLG jednou z klasických je, že NLG je
+    jednou z oborov umelej inteligencie a NLP, ktorej úlohou je zvyčajne
+    z nejazyčných vstupov vygenerovať text pre rôzne domény a oblasti
+    ľudských činnosti .
+  </para>
+  <para>
+    V poslednej dobre sa však na rôzne úlohy hlavne text-to-text
+    používajú prístupy, ktorých vstupom nie sú len dáta ale aj text.
+    Rozdiel medzi touto prvotnou definíciou NLG a reálnymi aplikáciami v
+    súčasnosti značí, že NLG prešlo počas posledných dvoch desaťročí
+    mnohými zmenami.
+  </para>
+  <para>
+    Vo všeobecnosti ide o generovanie textu, ktorý je priamo určený na
+    čítanie pre ľudí. Táto definícia je všeobecná a preto má NLG široké
+    využitie. Niektoré príklady využitia NLG zahŕňajú napr. generovanie
+    článkov do novín ako napríklad futbalové reportáže, zdravotnícke
+    správy, ale aj všeobecnejšie, nezávislé od domény využitia ako
+    simplifikácia alebo sumarizácia textu, generovanie parafráz,
+    prekladanie textov.
+  </para>
+</section>
+<section xml:id="generovanie-textu">
+  <title>Generovanie Textu</title>
+  <para>
+    Kým výstupom NLG je skoro vždy text. Vstupom môže byť spektrum
+    údajov. Vstupom však musí byť niečo čo chceme koncovému čitateľovi
+    výstupným textom sprostredkovať, informovať ho. Príkladmi vstupu
+    môžu byť číselné údaje(data-to-text) alebo text
+    samotný(text-to-text).
+  </para>
+  <section xml:id="podúlohy-pri-generovaní-prirodzeného-jazyka">
+    <title>Podúlohy pri generovaní prirodzeného jazyka</title>
+    <para>
+      Dosiahnutie transformácie vstupu na výstup môže byť vykonávaný
+      rôznymi spôsobmi. Jeden z takých všeobecných prístupov opisujú
+      Reiter a Dale vo svojej knihe. V tomto prípade je celý proces
+      rozdelený na menšie podúlohy. Kde každá z týchto úloh vykoná istú
+      časť transformácie vstupu. Tieto úlohy sú nasledovné Content
+      determination, Text structuring, Sentence aggregation, reffering
+      expression generation, lexicalization a surface realization . Toto
+      rozdelenie sa stalo de-facto rozdelením v NLG, ktoré je dodnes
+      používané v niektorých systémoch, Reiter k tomuto rozdeleniu
+      dospel na základe pozorovaní a trendov v NLG systémoch.
+    </para>
+    <section xml:id="content-determination">
+      <title>Content determination</title>
+      <para>
+        Alebo určovanie obsahu, slúži na určenie obsahu toho čo na konci
+        generácie chceme čitateľovi sprostredkovať. Vstup, dataset z
+        ktorého text generujeme môže obsahovať aj nadbytok informácií,
+        ktoré sú irelevantné, pre naše špecifické použitie. Táto úloha
+        je veľmi dôležitá lebo ovplyvňuje ostatné úlohy ktorú ju
+        nasledujú, ak vyberieme málo informácií konečný text môže byť
+        neúplný. Ďalšou s problémov je že určovanie obsahu je zvyčajne
+        závislé od domény v závislosti čo generujem, chcem vybrať
+        správne údaje.
+      </para>
+      <para>
+        Napr. pri generovaní článkov pre fanúšikov futbalu, sa na vstup
+        vyberú len informácie, ktoré sa väčšinou vyskytujú v článkoch
+        písaných ľuďmi.
+      </para>
+      <para>
+        Od starších prístupov prešlo na viac automatizované prístupy
+        pomocou strojového učenia alebo rozpoznávania vzorov. Kde sa
+        relevantný obsah vyberá na základe korelácie výskytu slov a
+        variácie dát.
+      </para>
+    </section>
+    <section xml:id="text-structuring">
+      <title>Text structuring</title>
+      <para>
+        Štrukturovanie textu slúži na zoradenie informácií získaných
+        výberom v predchádzajúcom kroku, do správneho poradia aby dávali
+        zmysel. Nesprávne poradie môže viesť k nezmyselnému textu,
+        ktorý, čitateľ nebude vedieť sledovať. V Prípade futbalových
+        článkov môžeme dáta znova organizovať do takého poradia v akom
+        by sme to našli napr. v novinách. t.j. Nadpis, úvod,
+        chronologický priebeh hry a beseda. Ak by sme začali
+        rekapituláciu zápasu od zadu, dostali by sme článok ktorý je
+        nezmyselný.
+      </para>
+    </section>
+    <section xml:id="sentence-aggregation">
+      <title>Sentence aggregation</title>
+      <para>
+        Pri tejto úlohe sa stretávame s viacerými definíciami. ako
+        odstránenie redundantných informácií alebo určenie blízkosti
+        jednotlivých údajov(v jednej vete alebo vo viacerých). Výsledok
+        je však rovnaký urobiť text kompaktnejším aby bol ľahšie a
+        lepšie čitateľní. Môže to znamenať rozdiel medzi piatimi vetami
+        kde sa mení iba predmet vety a jednou vetou kde všetky tieto
+        predmety sú vyjadrené jedným slovom alebo spojené spojkami. V
+        praxi to môže znamenať rozdiel medzi nasledujúcimi výstupmi.
+      </para>
+      <itemizedlist>
+        <listitem>
+          <para>
+            Tomáš mal v pondelok na raňajky jablko.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Tomáš mal v nedeľu na raňajky jablko.
+          </para>
+        </listitem>
+      </itemizedlist>
+      <itemizedlist>
+        <listitem>
+          <para>
+            Tomáš mal celý týždeň na raňajky jablká.
+          </para>
+        </listitem>
+      </itemizedlist>
+    </section>
+    <section xml:id="lexicalization">
+      <title>Lexicalization</title>
+      <para>
+        Leksikalizácia znamená nájdenie správnych slov na vyjadrenie
+        informácií v texte. Jazyky zvyčajne majú synonyma, pomocou
+        ktorých môžeme text plynulejšie vyjadriť. Opakovanie rovnakých
+        výrazov môže pôsobiť repetitívne a nudne.
+      </para>
+    </section>
+    <section xml:id="referring-expression-generation">
+      <title>Referring expression generation</title>
+      <para>
+        Generovanie odkazujúcich výrazov(Reffering Expression
+        Generation), slúži na tvorbu správnych odkazov pre jednotlivé
+        veci v texte, hlavne kvôli rozlíšiteľnosti. Je to zvyčajne
+        diskriminačná činnosti pri ktorej jednotlivé doménové entity
+        špecifikujeme dovtedy, kým ich vieme od ostatných entít
+        rozoznať.
+      </para>
+    </section>
+    <section xml:id="surface-realization">
+      <title>Surface realization</title>
+      <para>
+        Poslednou úlohou je samotné generovanie gramatický, syntaktický
+        a morfologický správneho a konkrétneho textu. Slúži na
+        pretavenie abstraktných reprezentácií ktoré sme doteraz zo
+        vstupu získali do konkrétneho jazyka.
+      </para>
+      <para>
+        Najjednoduchšie sa dá spraviť šablónami alebo predurčenými
+        statickými spravami(canned text) tieto prístupy sú však
+        primitívne a nedostatočné. Prístupy, ktoré sa používajú sú
+        zvyčajne založené na štatistických princípoch alebo na základe
+        rôznych gramatík(CCG, SGS).
+      </para>
+    </section>
+  </section>
+  <section xml:id="krátka-história-nlg">
+    <title>Krátka história NLG</title>
+    <para>
+      Prvé systémy, ktoré sa objavujú v 60. rokoch slúžili hlavne na
+      preklad textov z rôznych jazykov. Vo väčšine prípadov vykonávali
+      iba surface realization. Až neskôr v 70. rokoch sa objavujú
+      systémy na generovanie textu z ne-lingvistických údajov. Tieto
+      systémy poukazovali na to že NLG nie je len NLU odzadu a taktiež
+      na vznik istých problémov pri NLG. 80. roky predstavujú obdobie
+      rozvoja NLG, odstupovalo sa od stavania monolitických systémov a
+      pristúpilo sa k skúmaniu jednotlivých podúloh pri generovaní.
+      Koncom 90. rokov väčšina architektúr používala pipeline(rúrovú)
+      architektúru s menšími zmenami. Tieto architektúry boli podobné aj
+      naprie tomu, že mali rozdielne teoretické pozadia(východiská?).
+      Taktiež rozdeľovali generovanie na podobné podúlohy. Táto
+      podobnosť pravdepodobne súvisí s tým ako ľudský mozog vytvára
+      hovorenú reč aj keď podobnosť k psycholingvistike nebol cieľom
+      týchto systémov.
+    </para>
+    <para>
+      Rúrová architektúra sa teda stala de facto štandardom. Je mnoho
+      dôvodov prečo rúrovú architektúru používať. Jedným z nich je jej
+      jednoduchosť a jednoduchosť implementácie a následné odhaľovanie
+      chýb. Vývoj takýchto systémov stojí menej námahy ako vytvárať
+      komplexné systémy. Aj keď majú svoje nedostatky ako napríklad
+      absencia spätnej väzby.
+    </para>
+  </section>
+  <section xml:id="úlohy-v-nlg">
+    <title>Úlohy v NLG</title>
+    <para>
+      Okrem horeuvedených podúloh existujú aj iné prístupy, ktoré v sebe
+      nezahŕňajú modulárne systéme. Sem patria metódy založené na
+      strojovom učení a neuŕonových sietiach, ktoré sa učia vzťah medzi
+      vstupnými a výstupnými údajmi. Nasleduje zopár populárnych využití
+      NLG, sú to hlavne využitia pre úlohy typu text-to-text. Aj keď
+      podobné prístupy môžeme použiť aj na klasické data-to-text
+      generovanie.
+    </para>
+    <section xml:id="parafrázovanie">
+      <title>Parafrázovanie</title>
+      <para>
+        Parafrázovanie alebo prerozprávanie toho istého obsahu inými
+        slovami. Je užitočná činnosť, ktorá má mnoho využití v
+        kombináciou s ostatnými úlohami NLG ako sumarizácia, odpovedanie
+        otázok(question answering), strojový preklad a.i . Prístupy k
+        parafrázovaniu môžeme rozdeliť na monolingvistiské, pivotné
+        metódy a neurónové prístupy. V porovnaní prístupov metóda
+        založená na neurónovoých prístupoch mala lepšie výsledky ako
+        klasické modely založené na frázach.
+      </para>
+    </section>
+    <section xml:id="simplifikácia">
+      <title>Simplifikácia</title>
+      <para>
+        Simplifikácia textu znamená zmenu jazykovej štruktúry pričom
+        informácie, ktoré sú v tomto texte obsiahnuté ostávajú rovnaké,
+        zmysel textu sa nemení. Hlavnou motiváciou pre simplifikácia je
+        sprístupnenie informácií menej vzdelaným ľuďom, deťom,
+        cudzincom, alebo osobám s rôznymi poruchami ,ktoré im sťažujú
+        pochopenie text ako napr. dyslexia alebo ľudia trpiaci hluchotou
+        .
+      </para>
+      <para>
+        Slabší čitatelia môžu mať problémy s čítaním komplikovanejších
+        textov keď sa mozog musí sústrediť na spracovávanie slov vyššie
+        kognitívne činnosti trpia. Ľudia trpiaci takýmito poruchami
+        musia použiť väčšiu časť pamäte na pochopenie textu. Rozdelenie
+        viet na kratšie časti spôsobuje odbremenenie od pamätanie si, a
+        zjednodušuje čítanie. Je dokázané, že metódy manuálnej
+        simplifikácie textu pomáhajú slabším čitateľom. Práve tieto
+        štúdia motivovali výskum automatizovanej simplifikácie textu.
+      </para>
+      <para>
+        Okrem ľudí simplifikácia textu môže predstavovať rôzne výhodu aj
+        pre systémy, ktoré s textom extenzívne pracujú ako napríklad
+        systémy na strojový preklad.
+      </para>
+      <para>
+        Tak ako aj vo viacerých oblastiach NLG aj pri simplifikácii sa v
+        poslednej dobe prechádza od klasických prístupov založených na
+        gramatikách, ručne písaných pravidlách na používanie neurónové
+        siete, konkrétne modely typu sequence-to-sequence, ktoré
+        dosahujú lepšie výsledky ako doteraz známe systémy . Tieto
+        systému sa učia end-to-end, a majú jednoduchšie architektúry ako
+        klasické systémy založené na rôznych štatistických prístupoch,
+        umožňuje to trénovanie modelov na základe znakov alebo aj vo
+        viacerých jazykoch. Oproti prvotným systémov tieto pristupujú k
+        celej úlohe simplifikácie ako k prekladu jazyka do jeho
+        zjednodušenej podoby.
+      </para>
+      <para>
+        Populárnou trénovacou sadou pre simplifikáciu textov sú jednak
+        manuálne simplifikované texty (gigaword duc etc.) alebo
+        paralelné korpusy napr. Anglická wikipédia a jej simplifikovaná
+        alternatíva.
+      </para>
+    </section>
+    <section xml:id="sumarizácia">
+      <title>Sumarizácia</title>
+      <para>
+        Sumarizácia má za úlohu skrátiť text za účelom znížiť množstvo
+        textu na čítanie pričom sa zachovajú dôležité informácie v
+        texte. Hlavnou motiváciou pre takéto systémy je zníženie
+        informačného preťaženia v dobe internetu a ľahko prístupných
+        informácií.
+      </para>
+      <para>
+        Jedna z prvých pokusov o sumarizácia, ktorá sa zaoberala tvorbou
+        abstraktov z vedeckých textov, fungovala na základe toho ako
+        často sa jednotlivé slová vyskytujú a na základe tejto metriky
+        sa vybrali vety, ktoré sa použijú v koncovom texte . Tento
+        prístup je založený na tom, že autor ktorý dielo píše bude
+        dôležité slová opakovať, a nebude mať dostatok synonym. Celá
+        sumarizácia sa potom zakladá na extrakcii viet.
+      </para>
+      <para>
+        Okrem extrakcie poznáme aj ďalšie prístupy ako kompresia alebo
+        abstrakcie. Avšak kvôli tomu, že väčšina ľudských sumárov je
+        viac abstraktných, spôsoby kde sa vyberajú slová a vety z
+        pôvodného textu sú nedostatočné. Je za potreby text pochopiť a
+        následne abstraktnú myšlienku vyjadriť textom .
+      </para>
+      <para>
+        V prípade abstraktívnej sumarizácie dosahujú najlepšie výsledky
+        neurónové siete typu sequence-to-sequence .
+      </para>
+    </section>
+    <section xml:id="generovanie-dialógov">
+      <title>Generovanie dialógov</title>
+      <para>
+        Dialógové systémy majú za úlohu generovať odpovede pre zadané
+        otázky. Využitie takýchto systémov je možné napríklad pri
+        chatbotoch, ktoré majú za úlohu komunikovať s užívateľom v
+        prirodzenom jazyku.
+      </para>
+      <para>
+        Klasické prístupy v sebe zahŕňali výber odpovede z databázy
+        odpovedí. Tieto prístupy majú malú úroveň generalizácie a
+        možnosti odpovedí sú limitované tým pádom, že sa odpovedá na
+        základe pravidiel.
+      </para>
+      <para>
+        Novšie prístupy zahŕňajú založené na štatistickom strojovom
+        učení v sebe zahŕňajú učenie sa vzťahov medzi otázkami a
+        odpoveďami na základe nejakého korpusu. Tieto prístupy sú
+        automatizované a jediné čo potrebujeme sú páry - otázky,
+        odpovede. Najlepšie na realizácie takýchto úloh sú znova
+        sequence-to-sequence modely. Ktoré dosahujú vylepšené výsledky
+        oproti starším spôsobom.
+      </para>
+    </section>
+  </section>
+  <section xml:id="nlg-pomocou-deep-learningu">
+    <title>NLG pomocou deep learningu</title>
+    <para>
+      Ako sme mohli vidieť mnoho state of the art systémov používajú
+      neurónové siete. Tieto prístupy sa stávajú viac a viac populárnymi
+      hlavne v dnešnej dobe keď je prístupným mnoho dát a korpusov.
+    </para>
+    <para>
+      Ako však použijeme neurónové siete? Tým pádom, že naším cieľom je
+      použiť text ako vstup a z neho generovať text. budeme potrebovať
+      architektúru neurónových sietí, ktorá je na túto úlohu vhodná.
+      Klasické neurónové siete s kladnou spätnou väzbou nie sú
+      dostatočné na spracovanie sekvenčných vstupov.
+    </para>
+    <para>
+      Pre spracovanie sekvenčných dát (hudba, text atď.) je vhodné
+      používať rekurentné architektúry, hlavnou výhodnou je že tieto
+      architektúry robia rozhodnutia aj na základe vstupov ktoré už
+      dostali, nie len na základe aktuálneho vstupu. Klasické RNN siete
+      trpia miznúcim alebo explodujúcim gradientom, ktorý je technický
+      problém ktorý nastáva pri propagácia chyby a gradient jednoducho
+      stráca, na adresovanie týchto nedostatkov boli vyvinuté
+      architektúry ako GRU alebo LSTM s tzv. hradlami(gates) ktoré
+      kontrolujú čo si neurón má zapamätať alebo zabudnúť. Všetky tieto
+      neurónky majú za úlohy naučiť sa pravdepodobnostnú funkciu, ktorá
+      zachytáva závislosť medzi vstupmi a výstupmi.
+    </para>
+    <para>
+      Viacero text-to-text NLG úloh majú na vstupe aj výstupe sekvenciu
+      znakov, pre tieto vieme použiť špeciálne architektúry
+      sequence-to-sequnce. Tieto architektúry sa zvyčajne skladajú z
+      dvoch vrstiev jedného enkódera a dekodéra.
+    </para>
+  </section>
+</section>
+<section xml:id="cieľ-práce">
+  <title>Cieľ Práce</title>
+  <para>
+    Cieľom tejto prace bude generovať text v prirodzenom jazyku, t.j.
+    určený pre ludi na čítanie. Využitie takéhoto systému potom môže byt
+    rôznorodé, slúži hlavne na automatizovanie prace pri písaní textov.
+    A automatizovanie rôznych úloh na ktoré bolo treba robiť v minulosti
+    manuálne sem spadajú už zmienené úlohy simplifikácie, sumarizácie,
+    strojového prekladu, parafrázovania a. i.
+  </para>
+  <para>
+    Pozrieme sa na oblasť NLG ako sa vyvíjala a aké v nej majú využitia
+    neuronové siete. Generovanie bude teda robene cez neuronové siete,
+    hlavne kvôli dostupnosti veľkých množstiev dát a jednoduchosti ich
+    použitia a trénovania. Ich výkon je tiež porovnateľný s inými
+    metódami v NLG, navyše odstraňujú mnoho nevýhod starších prístupov.
+  </para>
+  <para>
+    Hodnotenie výsledkov generovania bude robené na základe metrík, ale
+    kvôli komplexnosti prirodzeného jazyka a ťažkosti určenia
+    objektívnej kvality textu text bude vyhodnotený aj manuálne.
+  </para>
+  <para>
+    Pre túto prácu sme si stanovili nasledovné ciele:
+  </para>
+  <para>
+    Analyzovať oblasť NLG a možnosti na generovanie textu
+  </para>
+  <itemizedlist>
+    <listitem>
+      <para>
+        Zistiť čo v sebe generovanie textu zahŕňa
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Navrhnúť a implementovať model na generovanie
+      </para>
+    </listitem>
+  </itemizedlist>
+  <para>
+    Využitím NN natrénovať modely, ktoré sú schopné generovať text.
+  </para>
+  <itemizedlist>
+    <listitem>
+      <para>
+        vyhodnotenie výsledkov trénovanie na slovenskom aj anglickom
+        texte z kvalitatívneho hľadiska
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Trénovanie na paralelných korpusoch
+      </para>
+    </listitem>
+  </itemizedlist>
+</section>
+<section xml:id="návrh">
+  <title>Návrh</title>
+  <para>
+    Chceme pomocou neurónovej siete namodelovať funkciu ktorá nám povie,
+    po istom počte písmen aké je najpravdepodobnejšie ďalšie písmeno.
+    Takýmto spôsobom budeme vedieť generovať texty. Celý proces môžeme
+    rozdeliť na dve podúlohy, prvá je trénovanie modelu, kedy sa model
+    učí a druhá podúloha je generovanie, pri ktorom model na základe
+    naučeného predpovedá.
+  </para>
+  <para>
+    Na trénovanie budeme potrebovať dáta, z ktorých sa náš model vie
+    naučiť pravdepodobnostné rozloženie písmen. Pre tento prípad sme si
+    zvolili Wikipédiu, kvôli svojej rozmanitosti a veľkosti. Model na
+    vstup dostane sekvenciu znakov a bude musieť predpovedať sekvenciu
+    znakov posunutú o jeden znak ďalej, takto sa naučí ako z aktuálnej
+    sekvencie vygenerovať ďalšiu sekvenciu s pridaným znakom.
+  </para>
+  <para>
+    Na generovanie si môžeme vstupnú sekvenciu vymyslieť, môže to byť
+    písmeno alebo celé slovo. A už trénovaná sieť bude vedieť povedať,
+    pravdepodobnosti toho aké by malo byť ďalšie písmeno v poradí.
+    Príkladom môže byť že mu na vstup zadáme sekvenciu &quot;abc&quot; a
+    sieť vráti pravdepodobnosti pre celý slovník v tomto prípade iba
+    a,b,c s prislúchajúcimi hodnotami ich pravdepodobnosti výskytu ako
+    ďalšie písmeno(napr. 0.2, 0.2, 0.6) potom je už na nás, ktoré si
+    vyberieme a ako.
+  </para>
+  <section xml:id="dataset">
+    <title>Dataset</title>
+    <para>
+    </para>
+  </section>
+  <section xml:id="opis-modelu">
+    <title>Opis Modelu</title>
+    <para>
+      Tým pádom že modelujeme sekvenciu znakov a závisí nám aj od
+      predchádzajúcich vstupoch nie len na konkrétnom použijeme
+      rekurentnú neurónovú sieť. Konkrétne LSTM siete, ktoré nemajú
+      problém s dlhodobými závislosťami vstupov.
+    </para>
+    <para>
+      Na modelovanie a generovanie použijeme model znázornení na obrázku
+      <link linkend="fig:nn_model">[fig:nn_model]</link>. Vstup do siete
+      bude kódovaní ako one-hot vektor (každé písmeno má priradení
+      index) tento vstup sa posunie do Embedding vrstvy, ktorá má za
+      úlohu naučiť sa vektorové reprezentácie pomocou desatinnými
+      číslami pre jednotlivé vstupy, táto reprezentácia sa potom posunie
+      do LSTM vrstvy. Nakoniec výstup posunieme do lineárnej vrstvy
+      ktorá nám zredukuje výstup z LSTM vrstiev na vhodnú veľkosť, ktorý
+      potom môžeme interpretovať ako vektor pravdepodobnostných hodnoty
+      pre jednotlivé možné vstupy.
+    </para>
+    <para>
+      Konfigurácia siete je nasledujúca: embedding vrstva nám vráti
+      vektor s 200 dimenziami máme 2 vrstvy LSTM sietí, s veľkosťou 200
+      neuŕonov a na konci použijeme softmax
+    </para>
+  </section>
+  <section xml:id="trénovanie-modelu">
+    <title>Trénovanie Modelu</title>
+    <para>
+      Náš model budeme trénovať na slovenskom a anglickom texte, korpus
+      použijeme z wikipédie. Kvôli rozdielom vo veľkosti slovenskej a
+      anglickej wikipédie použijeme voľne dostupné texty slovenskej a
+      simplifikovanej anglickej wikipédie.
+    </para>
+    <para>
+      Trénovanie siete potom prebieha tak že každému písmenu pridelíme
+      index(one-hot vektor) zo slovníka a následne ich pošleme do nášho
+      modelu. Výslednú hodnotu porovnáme s ďalšou v poradí, váhy sa
+      vhodne upravia
+    </para>
+    <para>
+      Celú sieť trénujeme na slovenskej a anglickej wikipédie. Kvôli
+      rozdielom vo veľkosti a kvality slovenskej a anglickej wikipádii
+      použijeme len simple english wikipédiu, ktorá má porovnateľnú
+      veľkosť.
+    </para>
+  </section>
+  <section xml:id="generovanie-textu-1">
+    <title>Generovanie Textu</title>
+    <para>
+      V tejto fáze natrénovanej sieti pošleme písmeno a z výstupu siete
+      zistíme písmeno s najvyššou hodnotou pravdepodobnosti, ktoré sa by
+      sa mohlo vyskytnúť po vstupe tento výstup použijeme ako ďalší
+      vstup do siete, takto pokračujeme, kým nemáme dostatočné množstvo
+      textu viď obr. <link linkend="fig:nn_gen">[fig:nn_gen]</link>.
+    </para>
+    <figure>
+      <title>Spôsob generovanie písmen na základe predchádzajúcich
+      písmen</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figures/model-2.png" />
+        </imageobject>
+        <textobject><phrase>Spôsob generovanie písmen na základe
+        predchádzajúcich písmen</phrase></textobject>
+      </mediaobject>
+    </figure>
+    <para>
+      <anchor id="fig:nn_gen" />[fig:nn_gen]
+    </para>
+    <figure>
+      <title>Model neurónovej siete na generovanie textu</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figures/model-1.png" />
+        </imageobject>
+        <textobject><phrase>Model neurónovej siete na generovanie
+        textu</phrase></textobject>
+      </mediaobject>
+    </figure>
+    <para>
+      <anchor id="fig:nn_model" />[fig:nn_model]
+    </para>
+  </section>
+  <section xml:id="implementácia">
+    <title>implementácia</title>
+    <para>
+      Na implementáciu použijeme programovací jazyk Python a na
+      uľahčenie práce s neurónovými sieťami knižnicu PyTorch, ktorá
+      obsahuje väčšinu potrebných komponentov na poskladanie modelu.
+    </para>
+    <section xml:id="predspracovanie">
+      <title>predspracovanie</title>
+      <para>
+      </para>
+    </section>
+    <section xml:id="model">
+      <title>model</title>
+      <para>
+      </para>
+    </section>
+    <section xml:id="trénovanie">
+      <title>trénovanie</title>
+      <para>
+      </para>
+    </section>
+    <section xml:id="generovanie">
+      <title>generovanie</title>
+    </section>
+  </section>
+</section>
+<section xml:id="vyhodnotenie">
+  <title>Vyhodnotenie</title>
+  <para>
+    Výsledky experimentu budú vyhodnotené manuálne. Na vyhodnotenie sme
+    každému testerovi dali 6 vygenerovaných textov, pričom sa
+    vyhodnocovali tieto 4 kvalitatívne parameter textu:
+  </para>
+  <itemizedlist>
+    <listitem>
+      <para>
+        Správnosť jednotlivých slov
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Morfologický tvar slov
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Slovosled
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Zmysluplnosť celého textu
+      </para>
+    </listitem>
+  </itemizedlist>
+  <para>
+    Tieto metriky sú v poradí od najkratšej závislosti písmen až po
+    najdlhšie. Spôsob vyhodnotenia bude nasledovný, zoberieme všetky
+    odpovede zvlášť pre slovenský a anglický text a vytvoríme z nich
+    priemer.
+  </para>
+  <section xml:id="anglický-text">
+    <title>Anglický text</title>
+    <para>
+      Výsledky hodnotenie anglických textov sú nasledovné: Zhruba 79%
+      vygenerovaných slov dávalo zmysel Slovosled bol správny v 40%
+      textov Morfológia v prípade 66% A zmysel dávalo len 23% z
+      celkových textov
+    </para>
+    <para>
+      V prípade angličtiny mala naša sieť problém hlavne zachovať nejakú
+      zmysluplnú myšlienku, kým slová a ich tvary boli pomerne dobré,
+      sieť nedokázala zachovať dostatočný súvis pre vety a celkové
+      články.
+    </para>
+  </section>
+  <section xml:id="slovenský-text">
+    <title>Slovenský text</title>
+    <para>
+      Výsledky hodnotenie slovenských textov sú nasledovné: Zhruba 69%
+      vygenerovaných slov dávalo zmysel Slovosled bol správny v 58%
+      textov Morfológia v prípade 54% A zmysel dávalo len 17% z
+      celkových textov
+    </para>
+    <para>
+      Skoro v každej metrike bola slovenčina horšia, pravdepodobne kvôli
+      rozdielu medzi komplexnosťami jazykov. Slovenčina má pestrejšiu
+      morfológiu a slová sa dajú ohýbať do viacerých tvarov.
+    </para>
+    <para>
+      Z výsledkov hodnotenia vyplýva, že aj napriek jednoduchosti nášho
+      modelu bol schopný sa naučiž krátkodobé závisloti ktoré nám dávali
+      zmysluplné slová, čo sa týka komplikovanejších vecí ako súvis a
+      závislosť jednotlivých častí textov, na ktoré sa siet potrebuje
+      naučiť dlhšie závisloti, sieť nebola schopná zapamätať si vzťahy,
+      pomohla by asi pozornosť.
+    </para>
+    <para>
+      |l|
+    </para>
+    <table>
+      <title>
+        <anchor id="tab:gen-text" />[tab:gen-text]Ukážka vygenerovaného
+        slovenského a anglického textu.
+      </title>
+      <tgroup cols="1">
+        <colspec align="left" />
+        <tbody>
+          <row>
+            <entry>
+              John Cheerny
+            </entry>
+          </row>
+          <row>
+            <entry>
+              John Leyn Show (August 24, 1940 0 February 23, 1987) was
+              an American singer-songwriter and worldwide. He acted in
+              the band for songs for the 1990s to the &quot;Michael
+              Albert Andrew &amp; Ort&quot;. He was set during the
+              mid-1990s. He won a former club which became a character
+              for the business Adele Shelley dollar women’s song book
+              &quot;Raw&quot; as NXT War Railway from the 2001 census.
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+<literallayout>
+</literallayout>
+    <table>
+      <title>
+        <anchor id="tab:gen-text" />[tab:gen-text]Ukážka vygenerovaného
+        slovenského a anglického textu.
+      </title>
+      <tgroup cols="1">
+        <colspec align="left" />
+        <tbody>
+          <row>
+            <entry>
+              Saint-Martin
+            </entry>
+          </row>
+          <row>
+            <entry>
+              Saint-Maritre je francúzska obec, ktorá sa nachádza v
+              departemente Orne, v regióne Dolná Normandia.
+            </entry>
+          </row>
+          <row>
+            <entry>
+              Obec má rozlohu . Najvyšší bod je položený a najnižší bod
+            </entry>
+          </row>
+          <row>
+            <entry>
+              Počet obyvateľov obce je ().
+            </entry>
+          </row>
+          <row>
+            <entry>
+              Nasledujúci graf zobrazuje vývoj počtu obyvateľov v obci.
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+<literallayout>
+</literallayout>
+  </section>
+</section>
+</article>

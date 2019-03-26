@@ -1,0 +1,87 @@
+\section{Generovanie Textu}
+
+Kým výstupom NLG je skoro vždy text. Vstupom môže byť spektrum údajov. Vstupom však musí byť niečo čo chceme koncovému čitateľovi výstupným textom sprostredkovať, informovať ho. Príkladmi vstupu môžu byť číselné údaje(data-to-text) alebo text samotný(text-to-text)\cite{roger_paul_2002_whatisnlg}.
+
+\subsection{Podúlohy pri generovaní prirodzeného jazyka}
+Dosiahnutie transformácie vstupu na výstup môže byť vykonávaný rôznymi spôsobmi. Jeden z takých všeobecných prístupov opisujú Reiter a Dale vo svojej knihe\cite{reiter_dale_2000_buildingnlgsystems}. V tomto prípade je celý proces rozdelený na menšie podúlohy. Kde každá z týchto úloh vykoná istú časť transformácie vstupu. Tieto úlohy sú nasledovné Content determination, Text structuring, Sentence aggregation, reffering expression generation, lexicalization a surface realization \cite{reiter_dale_2000_buildingnlgsystems}. Toto rozdelenie sa stalo de-facto rozdelením v NLG, ktoré je dodnes používané v niektorých systémoch, Reiter k tomuto rozdeleniu dospel na základe pozorovaní a trendov v NLG systémoch.
+
+\subsubsection{Content determination}
+Alebo určovanie obsahu, slúži na určenie obsahu toho čo na konci generácie chceme čitateľovi sprostredkovať. Vstup, dataset z ktorého text generujeme môže obsahovať aj nadbytok informácií, ktoré sú irelevantné, pre naše špecifické použitie. Táto úloha je veľmi dôležitá lebo ovplyvňuje ostatné úlohy ktorú ju nasledujú, ak vyberieme málo informácií konečný text môže byť neúplný. Ďalšou s problémov je že určovanie obsahu je zvyčajne závislé od domény v závislosti čo generujem, chcem vybrať správne údaje.
+
+Napr. pri generovaní článkov pre fanúšikov futbalu\cite{vanderlee_krahmer_wubben_2017_PASS}, sa na vstup vyberú len informácie, ktoré sa väčšinou vyskytujú v článkoch písaných ľuďmi.
+
+ Od starších prístupov prešlo na viac automatizované prístupy pomocou strojového učenia alebo rozpoznávania vzorov. Kde sa relevantný obsah vyberá na základe korelácie výskytu slov a variácie dát\cite{perera_2017_recentnlgadv}.
+
+\subsubsection{Text structuring}
+Štrukturovanie textu slúži na zoradenie informácií získaných výberom v predchádzajúcom kroku, do správneho poradia aby dávali zmysel. Nesprávne poradie môže viesť k nezmyselnému textu, ktorý, čitateľ nebude vedieť sledovať. V Prípade futbalových článkov môžeme dáta znova organizovať do takého poradia v akom by sme to našli napr. v novinách\cite{vanderlee_krahmer_wubben_2017_PASS}. t.j. Nadpis, úvod, chronologický priebeh hry a beseda. Ak by sme začali rekapituláciu zápasu od zadu, dostali by sme článok ktorý je nezmyselný.
+
+\subsubsection{Sentence aggregation}
+Pri tejto úlohe sa stretávame s viacerými definíciami. ako odstránenie redundantných informácií alebo určenie blízkosti jednotlivých údajov(v jednej vete alebo vo viacerých)\cite{gatt_2018_survey}. Výsledok je však rovnaký urobiť text kompaktnejším aby bol ľahšie a lepšie čitateľní. Môže to znamenať rozdiel medzi piatimi vetami kde sa mení iba predmet vety a jednou vetou kde všetky tieto predmety sú vyjadrené jedným slovom alebo spojené spojkami\cite{Dalianis_1996_lexagr_ord}. V praxi to môže znamenať rozdiel medzi nasledujúcimi výstupmi.
+
+\begin{itemize}
+    \item Tomáš mal v pondelok na raňajky jablko.
+    \item Tomáš mal v nedeľu na raňajky jablko.
+\end{itemize}
+
+\begin{itemize}
+    \item Tomáš mal celý týždeň na raňajky jablká.
+\end{itemize}
+
+\subsubsection{Lexicalization}
+Leksikalizácia znamená nájdenie správnych slov na vyjadrenie informácií v texte. Jazyky zvyčajne majú synonyma, pomocou ktorých môžeme text plynulejšie vyjadriť. Opakovanie rovnakých výrazov môže pôsobiť repetitívne a nudne\cite{gatt_2018_survey}.
+
+\subsubsection{Referring expression generation}
+Generovanie odkazujúcich výrazov(Reffering Expression Generation), slúži na tvorbu správnych odkazov pre jednotlivé veci v texte, hlavne kvôli rozlíšiteľnosti. Je to zvyčajne diskriminačná činnosti pri ktorej jednotlivé doménové entity špecifikujeme dovtedy, kým ich vieme od ostatných entít rozoznať\cite{reiter_dale_2000_buildingnlgsystems}.
+
+\subsubsection{Surface realization}
+Poslednou úlohou je samotné generovanie gramatický, syntaktický a morfologický správneho a konkrétneho textu. Slúži na pretavenie abstraktných reprezentácií ktoré sme doteraz zo vstupu získali do konkrétneho jazyka\cite{gatt_2018_survey}.
+
+Najjednoduchšie sa dá spraviť šablónami alebo predurčenými statickými spravami(canned text) tieto prístupy sú však primitívne a nedostatočné. Prístupy, ktoré sa používajú sú zvyčajne založené na štatistických princípoch alebo na základe rôznych gramatík(CCG, SGS)\cite{perera_2017_recentnlgadv}.
+
+\subsection{Krátka história NLG}
+Prvé systémy, ktoré sa objavujú v 60. rokoch slúžili hlavne na preklad textov z rôznych jazykov. Vo väčšine prípadov vykonávali iba surface realization. Až neskôr v 70. rokoch sa objavujú systémy na generovanie textu z ne-lingvistických údajov. Tieto systémy poukazovali na to že NLG nie je len NLU odzadu a taktiež na vznik istých problémov pri NLG. 80. roky predstavujú obdobie rozvoja NLG, odstupovalo sa od stavania monolitických systémov a pristúpilo sa k skúmaniu jednotlivých podúloh pri generovaní\cite{reiter_dale_2000_buildingnlgsystems}. Koncom 90. rokov väčšina architektúr používala pipeline(rúrovú) architektúru s menšími zmenami. Tieto architektúry boli podobné aj naprie tomu, že mali rozdielne teoretické pozadia(východiská?). Taktiež rozdeľovali generovanie na podobné podúlohy. Táto podobnosť pravdepodobne súvisí s tým ako ľudský mozog vytvára hovorenú reč aj keď podobnosť k psycholingvistike nebol cieľom týchto systémov.
+
+Rúrová architektúra sa teda stala de facto štandardom\cite{reiter_1994_consensusarch}. Je mnoho dôvodov prečo rúrovú architektúru používať. Jedným z nich je jej jednoduchosť a jednoduchosť implementácie a následné odhaľovanie chýb. Vývoj takýchto systémov stojí menej námahy ako vytvárať komplexné systémy. Aj keď majú svoje nedostatky ako napríklad absencia spätnej väzby.
+
+\subsection{Úlohy v NLG}
+Okrem horeuvedených podúloh existujú aj iné prístupy, ktoré v sebe nezahŕňajú modulárne systéme. Sem patria metódy založené na strojovom učení a neuŕonových sietiach, ktoré sa učia vzťah medzi vstupnými a výstupnými údajmi. Nasleduje zopár populárnych využití NLG, sú to hlavne využitia pre úlohy typu text-to-text. Aj keď podobné prístupy môžeme použiť aj na klasické data-to-text generovanie\cite{Lapouras_2016_Imitation}.
+
+\subsubsection{Parafrázovanie}
+Parafrázovanie alebo prerozprávanie toho istého obsahu inými slovami. Je užitočná činnosť, ktorá má mnoho využití v kombináciou s ostatnými úlohami NLG ako sumarizácia, odpovedanie otázok(question answering), strojový preklad a.i \cite{Colin_2018_para}\cite{Mallinson_2017_para_w_mt}.
+Prístupy k parafrázovaniu môžeme rozdeliť na monolingvistiské, pivotné metódy a neurónové prístupy. V porovnaní prístupov metóda založená na neurónovoých prístupoch mala lepšie výsledky ako klasické modely založené na frázach\cite{Mallinson_2017_para_w_mt}.
+
+\subsubsection{Simplifikácia}
+   Simplifikácia textu znamená zmenu jazykovej štruktúry pričom informácie, ktoré sú v tomto texte obsiahnuté ostávajú rovnaké, zmysel textu sa nemení. Hlavnou motiváciou pre simplifikácia je sprístupnenie informácií menej vzdelaným ľuďom, deťom, cudzincom, alebo osobám s rôznymi poruchami ,ktoré im sťažujú pochopenie text ako napr. dyslexia alebo ľudia trpiaci hluchotou \cite{Inui_2003_simpl_assist}.
+   
+   Slabší čitatelia môžu mať problémy s čítaním komplikovanejších textov keď sa mozog musí sústrediť na spracovávanie slov vyššie kognitívne činnosti trpia. Ľudia trpiaci takýmito poruchami musia použiť väčšiu časť pamäte na pochopenie textu. Rozdelenie viet na kratšie časti spôsobuje odbremenenie od pamätanie si, a zjednodušuje čítanie. Je dokázané, že metódy manuálnej simplifikácie textu pomáhajú slabším čitateľom. Práve tieto štúdia motivovali výskum automatizovanej simplifikácie textu\cite{siddharthan_2014_simpl}.
+   
+   Okrem ľudí simplifikácia textu môže predstavovať rôzne výhodu aj pre systémy, ktoré s textom extenzívne pracujú ako napríklad systémy na strojový preklad\cite{Chandrasekar_1996_simpl_moti}.
+    
+    Tak ako aj vo viacerých oblastiach NLG aj pri simplifikácii sa v poslednej dobe prechádza od klasických prístupov založených na gramatikách, ručne písaných pravidlách na používanie neurónové siete, konkrétne modely typu sequence-to-sequence, ktoré dosahujú lepšie výsledky ako doteraz známe systémy \cite{Nisioi_2017_simpl_expl}. Tieto systému sa učia end-to-end, a majú jednoduchšie architektúry ako klasické systémy založené na rôznych štatistických prístupoch, umožňuje to trénovanie modelov na základe znakov alebo aj vo viacerých jazykoch. Oproti prvotným systémov tieto pristupujú k celej úlohe simplifikácie ako k prekladu jazyka do jeho zjednodušenej podoby.
+    
+    Populárnou trénovacou sadou pre simplifikáciu textov sú jednak manuálne simplifikované texty (gigaword duc etc.) alebo paralelné korpusy napr. Anglická wikipédia a jej simplifikovaná alternatíva\cite{Coster_2011_simpl_en_wiki}.
+
+\subsubsection{Sumarizácia}
+    Sumarizácia má za úlohu skrátiť text za účelom znížiť množstvo textu na čítanie pričom sa zachovajú dôležité informácie v texte. Hlavnou motiváciou pre takéto systémy je zníženie informačného preťaženia v dobe internetu a ľahko prístupných informácií\cite{nenkova_2011_autosum}.
+    
+    Jedna z prvých pokusov o sumarizácia, ktorá sa zaoberala tvorbou abstraktov z vedeckých textov, fungovala na základe toho ako často sa jednotlivé slová vyskytujú a na základe tejto metriky sa vybrali vety, ktoré sa použijú v koncovom texte \cite{luhn_1958_autoabstract}. Tento prístup je založený na tom, že autor ktorý dielo píše bude dôležité slová opakovať, a nebude mať dostatok synonym. Celá sumarizácia sa potom zakladá na extrakcii viet.
+    
+    Okrem extrakcie poznáme aj ďalšie prístupy ako kompresia alebo abstrakcie\cite{nenkova_2011_autosum}. Avšak kvôli tomu, že väčšina ľudských sumárov je viac abstraktných, spôsoby kde sa vyberajú slová a vety z pôvodného textu sú nedostatočné. Je za potreby text pochopiť a následne abstraktnú myšlienku vyjadriť textom \cite{Banko_2004_ngrams}.
+    
+    V prípade abstraktívnej sumarizácie dosahujú najlepšie výsledky neurónové siete typu sequence-to-sequence \cite{Piji_2017_deep_abs_sum}\cite{Nallapati_2016_sum_s2s}.
+
+\subsubsection{Generovanie dialógov}
+Dialógové systémy majú za úlohu generovať odpovede pre zadané otázky. Využitie takýchto systémov je možné napríklad pri chatbotoch, ktoré majú za úlohu komunikovať s užívateľom v prirodzenom jazyku.
+
+Klasické prístupy v sebe zahŕňali výber odpovede z databázy odpovedí. Tieto prístupy majú malú úroveň generalizácie a možnosti odpovedí sú limitované tým pádom, že sa odpovedá na základe pravidiel\cite{AbuAli_2016_Botta}.
+
+Novšie prístupy zahŕňajú založené na štatistickom strojovom učení v sebe zahŕňajú učenie sa vzťahov medzi otázkami a odpoveďami na základe nejakého korpusu. Tieto prístupy sú automatizované a jediné čo potrebujeme sú páry - otázky, odpovede. Najlepšie na realizácie takýchto úloh sú znova sequence-to-sequence modely. Ktoré dosahujú vylepšené výsledky oproti starším spôsobom\cite{Wu_2018_dialog}.
+
+\subsection{NLG pomocou deep learningu}
+Ako sme mohli vidieť mnoho state of the art systémov používajú neurónové siete. Tieto prístupy sa stávajú viac a viac populárnymi hlavne v dnešnej dobe keď je prístupným mnoho dát a korpusov.
+
+Ako však použijeme neurónové siete? Tým pádom, že naším cieľom je použiť text ako vstup a z neho generovať text. budeme potrebovať architektúru neurónových sietí, ktorá je na túto úlohu vhodná. Klasické neurónové siete s kladnou spätnou väzbou nie sú dostatočné na spracovanie sekvenčných vstupov.
+
+Pre spracovanie sekvenčných dát (hudba, text atď.) je vhodné používať rekurentné architektúry, hlavnou výhodnou je že tieto architektúry robia rozhodnutia aj na základe vstupov ktoré už dostali, nie len na základe aktuálneho vstupu. Klasické RNN siete trpia miznúcim alebo explodujúcim gradientom\cite{pascanu_2013_difficulty}, ktorý je technický problém ktorý nastáva pri propagácia chyby a gradient jednoducho stráca, na adresovanie týchto nedostatkov boli vyvinuté architektúry ako GRU\cite{cho_2014_learning} alebo LSTM\cite{hochreiter_1997_long} s tzv. hradlami(gates) ktoré kontrolujú čo si neurón má zapamätať alebo zabudnúť. Všetky tieto neurónky majú za úlohy naučiť sa pravdepodobnostnú funkciu, ktorá zachytáva závislosť medzi vstupmi a výstupmi.
+
+Viacero text-to-text NLG úloh majú na vstupe aj výstupe sekvenciu znakov, pre tieto vieme použiť špeciálne architektúry sequence-to-sequnce. Tieto architektúry sa zvyčajne skladajú z dvoch vrstiev jedného enkódera a dekodéra\cite{sutskever_2014_sequence}.
