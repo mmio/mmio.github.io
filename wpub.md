@@ -13,6 +13,6 @@ lead: All of my projects for WPUB are here!
 	<a class="btn btn-primary" href="assignment2">Assignment 2</a>
 </div>
 <div class="col-md-4 text-center">
-	<a class="btn btn-primary" href="#">Assignment 3</a>
+	<a class="btn btn-primary" href="assignment3">Assignment 3</a>
 </div>
 </div>

@@ -9,7 +9,7 @@ lead: You can find the report to my second assignment for WPUB
 
 <div class="row">
 	<div class="col-md-12 text-center">
-		<a class="btn btn-primary" href="/assets/zadanie2.zip">Download</a>
+		<a class="btn btn-primary" href="/assets/Z2-xvasko.zip">Download</a>
 	</div>
 </div>
 
